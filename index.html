@@ -1,526 +1,163 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Oaxaca Guide</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>
-  :root {
-    --terracotta: #C05A30;
-    --cream: #F5EFE0;
-    --dark: #1A1410;
-    --muted: #8A7B6C;
-    --gold: #D4A843;
-    --green: #3D6B47;
-    --blue: #2E5C8A;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--dark);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    background: var(--dark);
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 3px solid var(--terracotta);
-  }
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    color: var(--cream);
-    letter-spacing: 0.02em;
-  }
-  header h1 span {
-    color: var(--gold);
-    font-style: italic;
-  }
-  header p {
-    color: var(--muted);
-    font-size: 0.8rem;
-    margin-top: 2px;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .filters {
-    background: var(--dark);
-    padding: 0 32px 16px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .filter-btn {
-    padding: 6px 16px;
-    border-radius: 20px;
-    border: 1.5px solid transparent;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
-  .filter-btn.all { background: var(--terracotta); color: white; border-color: var(--terracotta); }
-  .filter-btn.food { background: transparent; color: #E8A87C; border-color: #E8A87C; }
-  .filter-btn.food.active, .filter-btn.food:hover { background: #E8A87C; color: var(--dark); }
-  .filter-btn.activity { background: transparent; color: #7CC4A8; border-color: #7CC4A8; }
-  .filter-btn.activity.active, .filter-btn.activity:hover { background: #7CC4A8; color: var(--dark); }
-  .filter-btn.fitness { background: transparent; color: #7EB3E8; border-color: #7EB3E8; }
-  .filter-btn.fitness.active, .filter-btn.fitness:hover { background: #7EB3E8; color: var(--dark); }
-  .filter-btn.all:hover { opacity: 0.9; }
-
-  .main {
-    display: flex;
-    flex: 1;
-    height: calc(100vh - 110px);
-  }
-
-  #map {
-    flex: 1;
-    height: 100%;
-    z-index: 1;
-  }
-
-  .sidebar {
-    width: 340px;
-    background: white;
-    overflow-y: auto;
-    border-left: 1px solid #e0d8cc;
-    box-shadow: -4px 0 20px rgba(0,0,0,0.08);
-  }
-
-  .sidebar-header {
-    padding: 16px 20px;
-    background: var(--cream);
-    border-bottom: 1px solid #e0d8cc;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .place-card {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f0e8dc;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .place-card:hover { background: #faf6f0; }
-  .place-card.active { background: #fdf5ea; border-left: 3px solid var(--gold); }
-
-  .card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .card-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--dark);
-    line-height: 1.3;
-  }
-
-  .cat-badge {
-    flex-shrink: 0;
-    font-size: 0.65rem;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-top: 2px;
-  }
-  .cat-food { background: #FDEBD0; color: #C05A30; }
-  .cat-activity { background: #D5EFE5; color: #2E7D5A; }
-  .cat-fitness { background: #D4E6F7; color: #1B5A8A; }
-
-  .card-address {
-    font-size: 0.73rem;
-    color: var(--muted);
-    margin-top: 4px;
-    line-height: 1.4;
-  }
-
-  .card-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 6px;
-  }
-
-  .rating {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--gold);
-  }
-  .rating span { color: var(--dark); }
-
-  .hours {
-    font-size: 0.72rem;
-    color: #5a9e6a;
-    font-weight: 500;
-  }
-
-  .card-tip {
-    font-size: 0.73rem;
-    color: #6b5e52;
-    margin-top: 6px;
-    font-style: italic;
-    line-height: 1.45;
-    border-left: 2px solid var(--gold);
-    padding-left: 8px;
-  }
-
-  /* Leaflet popup custom */
-  .custom-popup .leaflet-popup-content-wrapper {
-    background: var(--dark);
-    color: var(--cream);
-    border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-    padding: 0;
-  }
-  .custom-popup .leaflet-popup-tip { background: var(--dark); }
-  .custom-popup .leaflet-popup-content { margin: 0; padding: 14px 16px; min-width: 200px; }
-  .popup-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-  .popup-cat { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 6px; }
-  .popup-rating { font-size: 0.8rem; color: #ccc; }
-  .popup-hours { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
-
-  /* Custom markers */
-  .marker-dot {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 3px solid white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-  }
-  .home-marker {
-    width: 28px; height: 28px;
-    background: var(--terracotta);
-    border: 3px solid white;
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-  }
-
-  /* mobile */
-  @media (max-width: 700px) {
-    .main { flex-direction: column; height: auto; }
-    #map { height: 55vw; min-height: 260px; }
-    .sidebar { width: 100%; height: auto; max-height: 55vh; }
-    header { padding: 14px 16px; }
-    header h1 { font-size: 1.2rem; }
-    .filters { padding: 0 16px 12px; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Precision Owner's Rep</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1E1E1E;
+      --accent: #A6A6A6;
+      --background: #F8F8F8;
+      --highlight: #E5E5E5;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--primary);
+      line-height: 1.6;
+    }
+    header {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: #fff;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+    section {
+      padding: 4rem 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+      border-left: 2px solid var(--highlight);
+    }
+    .timeline div {
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .timeline div::before {
+      content: '';
+      position: absolute;
+      left: -1.1rem;
+      top: 0.3rem;
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, textarea, button {
+      font-size: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--highlight);
+      border-radius: 8px;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #000;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #fff;
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <h1>Precision Owner’s Representation</h1>
+    <p>Trust. Expertise. Seamless Execution.</p>
+  </header>
 
-<header>
-  <div>
-    <h1>Your <span>Oaxaca</span> Guide</h1>
-    <p>Tlalixtac de Cabrera &amp; surroundings</p>
-  </div>
-  <div style="text-align:right; color:#8A7B6C; font-size:0.75rem; line-height:1.6;">
-    🏠 Your Airbnb<br>
-    <span style="color:#ccc; font-size:0.68rem;">Primera los Compadres 98-163</span>
-  </div>
-</header>
+  <section class="services">
+    <h2>Our Services</h2>
+    <div class="grid">
+      <div class="card">Pre-Construction Planning</div>
+      <div class="card">Design Oversight</div>
+      <div class="card">Contract Negotiation</div>
+      <div class="card">Budget & Cost Control</div>
+      <div class="card">Stakeholder Coordination</div>
+    </div>
+  </section>
 
-<div class="filters">
-  <button class="filter-btn all active" onclick="filterPlaces('all', this)">All Places</button>
-  <button class="filter-btn food" onclick="filterPlaces('food', this)">🍽 Eat &amp; Drink</button>
-  <button class="filter-btn activity" onclick="filterPlaces('activity', this)">🌿 Things To Do</button>
-  <button class="filter-btn fitness" onclick="filterPlaces('fitness', this)">💪 Workout</button>
-</div>
+  <section class="process">
+    <h2>Our Process</h2>
+    <div class="timeline">
+      <div><strong>Discovery & Planning</strong><br>Needs analysis, feasibility, and scope.</div>
+      <div><strong>Design Management</strong><br>Coordination and value engineering.</div>
+      <div><strong>Execution Oversight</strong><br>Construction admin, scheduling, QA/QC.</div>
+      <div><strong>Closeout & Delivery</strong><br>Commissioning, handover, and documentation.</div>
+    </div>
+  </section>
 
-<div class="main">
-  <div id="map"></div>
-  <div class="sidebar">
-    <div class="sidebar-header">📍 <span id="count">14</span> places near you</div>
-    <div id="place-list"></div>
-  </div>
-</div>
+  <section class="testimonials">
+    <h2>Client Testimonials</h2>
+    <div class="grid">
+      <div class="card">"The level of professionalism and follow-through was unmatched." – Real Estate Developer</div>
+      <div class="card">"Seamless execution across a complex multi-phase project." – Corporate Facilities Manager</div>
+    </div>
+  </section>
 
-<script>
-const HOME = { lat: 17.0534, lng: -96.6588 };
+  <section class="about">
+    <h2>About</h2>
+    <p>With over a decade of experience navigating high-stakes construction projects, we specialize in providing end-to-end owner’s representation with clarity, precision, and integrity. Our consultative approach ensures every stakeholder is aligned and every detail is accounted for.</p>
+  </section>
 
-const PLACES = [
-  // FOOD
-  {
-    id: 1, category: 'food',
-    name: 'Paraíso Gourmet',
-    address: 'Carr. Internacional 312, San Miguel 2da Secc',
-    lat: 17.055963, lng: -96.653985,
-    rating: 4.5, reviews: 137,
-    hours: 'Mon–Fri 9am–4pm, Sat 9am–1pm',
-    tip: 'Great breakfast spot — chilaquiles, tlayudas, waffles. Outdoor seating and bike-friendly. Closest restaurant to your Airbnb!',
-    place_id: 'ChIJ2VZD3XEkx4URYEQ3i_A1cpU'
-  },
-  {
-    id: 2, category: 'food',
-    name: 'CAFFEIRO Café-Restaurante',
-    address: 'Adolfo López Mateos, San Antonio 7ma Secc',
-    lat: 17.0595019, lng: -96.65766080000002,
-    rating: 4.4, reviews: 243,
-    hours: 'Daily 8am–11pm',
-    tip: 'Wood-fired oven bread, excellent pizza and breakfast. Cabin-in-the-forest vibes. Come back again and again.',
-    place_id: 'ChIJH0bbQIIjx4URUJE3KCZS6QQ'
-  },
-  {
-    id: 3, category: 'food',
-    name: "Café \"Santo\"",
-    address: 'C. Gregorio N. Chávez 8, San Miguel 1ra Secc',
-    lat: 17.073029899999998, lng: -96.6504169,
-    rating: 4.5, reviews: 216,
-    hours: 'Mon & Wed–Sun 6pm–11:30pm (Closed Tue)',
-    tip: 'Live trova music on weekends, wood-fired pizza and crepes. Perfect evening out.',
-    place_id: 'ChIJDRPpefglx4UR4S2g1jC5iAw'
-  },
-  {
-    id: 4, category: 'food',
-    name: 'La Madriguera del Jabalí',
-    address: 'Melchor Ocampo 203, La Trinidad 6ta Secc',
-    lat: 17.0667558, lng: -96.6455053,
-    rating: 4.3, reviews: 291,
-    hours: 'Tue–Sun 3pm–11pm',
-    tip: 'Best pizza in Oaxaca according to regulars. Try the boneless pizza and honey-habanero wings.',
-    place_id: 'ChIJw-qlGJ8lx4URATaxvbp2bEM'
-  },
-  {
-    id: 5, category: 'food',
-    name: 'El Rincón Café Bar',
-    address: 'Tlalixtac de Cabrera',
-    lat: 17.086805, lng: -96.6598023,
-    rating: 4.3, reviews: 246,
-    hours: 'Daily 3pm–11pm',
-    tip: 'Stunning views of Oaxaca city. BBQ sandwiches, mezcal, and wood-fired pizza on a hillside.',
-    place_id: 'ChIJFXEGCx0nx4URi81BGa_7INg'
-  },
-  // ACTIVITIES
-  {
-    id: 6, category: 'activity',
-    name: 'Presas de Tlalixtac',
-    address: '68270 Tlalixtac de Cabrera',
-    lat: 17.0931399, lng: -96.6545076,
-    rating: 4.4, reviews: 434,
-    hours: 'Daily 8am–7pm',
-    tip: 'Scenic dams, zip line, and food nearby. Bring bug spray. Great family escape from the city.',
-    place_id: 'ChIJMXDDN68mx4URtOoXIeqyuhw'
-  },
-  {
-    id: 7, category: 'activity',
-    name: 'Las Guacamayas (Ecotourism)',
-    address: '68272 Tlalixtac de Cabrera',
-    lat: 17.095727, lng: -96.61156369999999,
-    rating: 5.0, reviews: 7,
-    hours: 'Open daily',
-    tip: 'Hiking and cycling trails. Lush and green in rainy season. Hidden gem, very few tourists.',
-    place_id: 'ChIJSTy1vrYnx4URYt-6n0u6F0g'
-  },
-  {
-    id: 8, category: 'activity',
-    name: 'Mezcal Tour Experience',
-    address: 'Av. de la Independencia 1600, Centro Oaxaca',
-    lat: 17.0601232, lng: -96.7160965,
-    rating: 5.0, reviews: 58,
-    hours: 'Mon/Wed/Fri 11am–3pm',
-    tip: 'Ask for Ramy. Small group, family-owned distillery, 10+ mezcal tastings. Best mezcal tour in town.',
-    place_id: 'ChIJWWXegi8hx4URuiAtznbPUb0'
-  },
-  {
-    id: 9, category: 'activity',
-    name: 'Jardín Etnobotánico de Oaxaca',
-    address: 'Reforma Sur, Centro, Oaxaca',
-    lat: 17.065591299999998, lng: -96.72196079999999,
-    rating: 4.4, reviews: 5685,
-    hours: 'Mon–Fri 10:30am–5pm (closed weekends)',
-    tip: 'Free entry! Stunning cacti and native plants. Limited to 30 people per slot — arrive early and queue up.',
-    place_id: 'ChIJtbqERzkix4URvuq2QnCL0S0'
-  },
-  {
-    id: 10, category: 'activity',
-    name: 'Hierve el Agua',
-    address: 'Hierve el Agua, Oaxaca (day trip, ~1.5hr)',
-    lat: 16.8656531, lng: -96.27600650000001,
-    rating: 4.6, reviews: 22750,
-    hours: 'Daily 7am–6:30pm',
-    tip: 'Petrified waterfalls + natural pools. One of only 2 in the world. Wear sturdy shoes. Don\'t skip the swim!',
-    place_id: 'ChIJ45FElP7IwIUR_Y671emlmy0'
-  },
-  // FITNESS
-  {
-    id: 11, category: 'fitness',
-    name: 'Power Fitness',
-    address: 'Av. de la Independencia 1600-B, Centro',
-    lat: 17.0599184, lng: -96.7157999,
-    rating: 4.6, reviews: 80,
-    hours: 'Mon–Fri 6am–10pm, Sat 6am–2pm',
-    tip: 'Day pass ~40–50 pesos. Old-school vibe, great free weights. No treadmills but excellent for lifting.',
-    place_id: 'ChIJ3R7qyeYjx4URQS_1otsNRMk'
-  },
-  {
-    id: 12, category: 'fitness',
-    name: 'Gym Rubicon',
-    address: 'Rayón 623, Centro, Oaxaca',
-    lat: 17.0570414, lng: -96.7193562,
-    rating: 4.6, reviews: 93,
-    hours: 'Mon–Fri 5:30am–11pm, Sat 7am–3pm, Sun 8am–3pm',
-    tip: 'Day pass 90 pesos. Clean, rarely crowded, friendly staff. Opens super early — great before a day of exploring.',
-    place_id: 'ChIJ0WELmcgjx4URJsKwkvD_GLw'
-  },
-  {
-    id: 13, category: 'fitness',
-    name: 'IRON GYM OAXACA',
-    address: '21 de Marzo 106, Unión y Progreso',
-    lat: 17.080344000000004, lng: -96.7065698,
-    rating: 4.5, reviews: 101,
-    hours: 'Mon–Fri 6am–10pm, Sat 7am–5pm, Sun 10am–2pm',
-    tip: 'Largest gym in the city — two floors of equipment. Best option if you want serious variety.',
-    place_id: 'ChIJz5HztNQjx4URio3YIdY7BsI'
-  },
-  {
-    id: 14, category: 'fitness',
-    name: 'BIO-FIT GYM CENTER 24H',
-    address: 'Prol de Amapolas 1507, Reforma',
-    lat: 17.0839303, lng: -96.713815,
-    rating: 4.6, reviews: 91,
-    hours: 'Open 24 hours, every day',
-    tip: 'The ONLY 24/7 gym option. Great for early birds or late-night sessions. Monthly passes very affordable.',
-    place_id: 'ChIJc6BsHCkjx4UR7QtEQWxA9c4'
-  }
-];
+  <section class="contact">
+    <h2>Contact</h2>
+    <form>
+      <input type="text" placeholder="Your Name" required />
+      <input type="email" placeholder="Your Email" required />
+      <textarea rows="5" placeholder="How can we assist you?" required></textarea>
+      <button type="submit">Submit Inquiry</button>
+    </form>
+  </section>
 
-const COLORS = { food: '#E8A87C', activity: '#7CC4A8', fitness: '#7EB3E8' };
-const EMOJIS = { food: '🍽', activity: '🌿', fitness: '💪' };
-let activeFilter = 'all';
-let activeCard = null;
-let markers = {};
-
-// Init map
-const map = L.map('map', { center: [HOME.lat, HOME.lng], zoom: 13 });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap, © CartoDB',
-  maxZoom: 19
-}).addTo(map);
-
-// Home marker
-const homeIcon = L.divIcon({
-  className: '',
-  html: `<div style="width:30px;height:30px;background:#C05A30;border:3px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 3px 10px rgba(0,0,0,0.4);"></div>`,
-  iconSize: [30, 30],
-  iconAnchor: [15, 30]
-});
-L.marker([HOME.lat, HOME.lng], { icon: homeIcon })
-  .addTo(map)
-  .bindPopup('<div style="font-family:Playfair Display,serif;font-weight:700;font-size:0.95rem;padding:4px 0;">🏠 Your Airbnb</div><div style="font-size:0.75rem;color:#888;margin-top:2px;">Primera los Compadres 98-163</div>', { className: 'custom-popup' })
-  .openPopup();
-
-function createMarker(place) {
-  const col = COLORS[place.category];
-  const icon = L.divIcon({
-    className: '',
-    html: `<div style="width:26px;height:26px;background:${col};border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;">${EMOJIS[place.category]}</div>`,
-    iconSize: [26, 26],
-    iconAnchor: [13, 13]
-  });
-
-  const marker = L.marker([place.lat, place.lng], { icon })
-    .addTo(map)
-    .bindPopup(`
-      <div class="popup-name">${place.name}</div>
-      <div class="popup-cat">${EMOJIS[place.category]} ${place.category}</div>
-      <div class="popup-rating">⭐ ${place.rating} (${place.reviews} reviews)</div>
-      <div class="popup-hours">⏰ ${place.hours}</div>
-    `, { className: 'custom-popup', maxWidth: 260 });
-
-  marker.on('click', () => highlightCard(place.id));
-  markers[place.id] = marker;
-}
-
-function renderSidebar(filter) {
-  const filtered = filter === 'all' ? PLACES : PLACES.filter(p => p.category === filter);
-  document.getElementById('count').textContent = filtered.length;
-  const list = document.getElementById('place-list');
-  list.innerHTML = '';
-
-  filtered.forEach(place => {
-    const card = document.createElement('div');
-    card.className = 'place-card';
-    card.id = `card-${place.id}`;
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="card-name">${place.name}</div>
-        <div class="cat-badge cat-${place.category}">${EMOJIS[place.category]} ${place.category === 'activity' ? 'To Do' : place.category === 'food' ? 'Eat' : 'Gym'}</div>
-      </div>
-      <div class="card-address">📍 ${place.address}</div>
-      <div class="card-meta">
-        <div class="rating">⭐ ${place.rating} <span style="color:#999;font-weight:400;">(${place.reviews})</span></div>
-        <div class="hours">⏰ ${place.hours.split(',')[0]}</div>
-      </div>
-      <div class="card-tip">${place.tip}</div>
-    `;
-    card.onclick = () => {
-      map.setView([place.lat, place.lng], 15, { animate: true });
-      markers[place.id]?.openPopup();
-      highlightCard(place.id);
-    };
-    list.appendChild(card);
-  });
-}
-
-function highlightCard(id) {
-  document.querySelectorAll('.place-card').forEach(c => c.classList.remove('active'));
-  const card = document.getElementById(`card-${id}`);
-  if (card) {
-    card.classList.add('active');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-}
-
-function filterPlaces(filter, btn) {
-  activeFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  // Toggle markers
-  PLACES.forEach(place => {
-    const marker = markers[place.id];
-    if (!marker) return;
-    if (filter === 'all' || place.category === filter) {
-      map.addLayer(marker);
-    } else {
-      map.removeLayer(marker);
-    }
-  });
-
-  renderSidebar(filter);
-}
-
-// Init
-PLACES.forEach(createMarker);
-renderSidebar('all');
-</script>
+  <footer>
+    &copy; 2025 Precision Owner’s Rep. All Rights Reserved.
+  </footer>
 </body>
 </html>
