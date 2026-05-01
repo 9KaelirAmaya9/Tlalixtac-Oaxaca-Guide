@@ -1005,6 +1005,86 @@ const CAT = {
 
 const CAT_ORDER = ['food','activity','fitness','laundry','medical','market','atm','transit','nightlife'];
 
+  let currentLang = 'en';
+
+  const STRINGS = {
+    en: {
+      kicker:       'Campo · Oaxaca · México',
+      title_top:    'Tu',
+      title_em:     'Oaxaca',
+      sub:          '99 places · curated for guests',
+      home_name:    '🏠 Casa Dos Lunas',
+      home_addr:    '98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera',
+      search_ph:    'Search places, neighborhoods…',
+      filter_lbl:   '',
+      open_now:     'Show open now only',
+      places:       'places',
+      all:          'All',
+      food:         '🍽 Eat',
+      activity:     '🌿 Do',
+      fitness:      '💪 Gym',
+      laundry:      '👕 Laundry',
+      medical:      '🏥 Medical',
+      market:       '🛒 Market',
+      atm:          '💳 ATM',
+      transit:      '🚌 Transit',
+      nightlife:    '🍸 Nightlife',
+      view_maps:    'View on Google Maps',
+      directions:   'Directions from Casa Dos Lunas',
+      maps_btn:     '📍 Google Maps',
+      dir_btn:      '↗ Directions',
+      open_badge:   'Open now',
+      closed_badge: 'Closed',
+    },
+    es: {
+      kicker:       'Campo · Oaxaca · México',
+      title_top:    'Tu',
+      title_em:     'Oaxaca',
+      sub:          '99 lugares · seleccionados para huéspedes',
+      home_name:    '🏠 Casa Dos Lunas',
+      home_addr:    '98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera',
+      search_ph:    'Buscar lugares, colonias…',
+      filter_lbl:   '',
+      open_now:     'Solo lugares abiertos ahora',
+      places:       'lugares',
+      all:          'Todo',
+      food:         '🍽 Comer',
+      activity:     '🌿 Hacer',
+      fitness:      '💪 Gym',
+      laundry:      '👕 Lavandería',
+      medical:      '🏥 Médico',
+      market:       '🛒 Mercado',
+      atm:          '💳 Cajero',
+      transit:      '🚌 Transporte',
+      nightlife:    '🍸 Vida nocturna',
+      view_maps:    'Ver en Google Maps',
+      directions:   'Cómo llegar desde Casa Dos Lunas',
+      maps_btn:     '📍 Google Maps',
+      dir_btn:      '↗ Cómo llegar',
+      open_badge:   'Abierto',
+      closed_badge: 'Cerrado',
+    }
+  };
+
+  // Spanish translations for category labels (used in cards + popups)
+  const CAT_LABELS_ES = {
+    food:      'Comer y beber',
+    activity:  'Qué hacer',
+    fitness:   'Ejercicio',
+    laundry:   'Lavandería',
+    medical:   'Médico',
+    market:    'Mercado',
+    atm:       'Cajero / Banco',
+    transit:   'Transporte',
+    nightlife: 'Vida nocturna',
+  };
+
+  function getCatLabel(cat){
+    if(currentLang === 'es' && CAT_LABELS_ES[cat]) return CAT_LABELS_ES[cat];
+    return CAT[cat].label;
+  }
+
+
 const DATA = [
   // ── FOOD ──
   { id:1,  cat:'food', name:'Taqueria Guelaguetza',        addr:'Tehuantepec–Oaxaca 402, San Miguel 2da Secc', lat:17.057989,   lng:-96.6578674, r:4.5, rc:18,    h:'Hours vary — pop in!',                   tip:'Best tacos al pastor in Oaxaca. Generous portions, authentic Oaxacan seasoning. Steps from your door.', gid:'ChIJVXNIs-Mlx4URGY4KFAWZ6y0' },
@@ -1652,85 +1732,6 @@ document.head.appendChild(s);
   // ══════════════════════════════════════════════════
   // LANGUAGE SYSTEM — EN / ES
   // ══════════════════════════════════════════════════
-  let currentLang = 'en';
-
-  const STRINGS = {
-    en: {
-      kicker:       'Campo · Oaxaca · México',
-      title_top:    'Tu',
-      title_em:     'Oaxaca',
-      sub:          '99 places · curated for guests',
-      home_name:    '🏠 Casa Dos Lunas',
-      home_addr:    '98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera',
-      search_ph:    'Search places, neighborhoods…',
-      filter_lbl:   '',
-      open_now:     'Show open now only',
-      places:       'places',
-      all:          'All',
-      food:         '🍽 Eat',
-      activity:     '🌿 Do',
-      fitness:      '💪 Gym',
-      laundry:      '👕 Laundry',
-      medical:      '🏥 Medical',
-      market:       '🛒 Market',
-      atm:          '💳 ATM',
-      transit:      '🚌 Transit',
-      nightlife:    '🍸 Nightlife',
-      view_maps:    'View on Google Maps',
-      directions:   'Directions from Casa Dos Lunas',
-      maps_btn:     '📍 Google Maps',
-      dir_btn:      '↗ Directions',
-      open_badge:   'Open now',
-      closed_badge: 'Closed',
-    },
-    es: {
-      kicker:       'Campo · Oaxaca · México',
-      title_top:    'Tu',
-      title_em:     'Oaxaca',
-      sub:          '99 lugares · seleccionados para huéspedes',
-      home_name:    '🏠 Casa Dos Lunas',
-      home_addr:    '98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera',
-      search_ph:    'Buscar lugares, colonias…',
-      filter_lbl:   '',
-      open_now:     'Solo lugares abiertos ahora',
-      places:       'lugares',
-      all:          'Todo',
-      food:         '🍽 Comer',
-      activity:     '🌿 Hacer',
-      fitness:      '💪 Gym',
-      laundry:      '👕 Lavandería',
-      medical:      '🏥 Médico',
-      market:       '🛒 Mercado',
-      atm:          '💳 Cajero',
-      transit:      '🚌 Transporte',
-      nightlife:    '🍸 Vida nocturna',
-      view_maps:    'Ver en Google Maps',
-      directions:   'Cómo llegar desde Casa Dos Lunas',
-      maps_btn:     '📍 Google Maps',
-      dir_btn:      '↗ Cómo llegar',
-      open_badge:   'Abierto',
-      closed_badge: 'Cerrado',
-    }
-  };
-
-  // Spanish translations for category labels (used in cards + popups)
-  const CAT_LABELS_ES = {
-    food:      'Comer y beber',
-    activity:  'Qué hacer',
-    fitness:   'Ejercicio',
-    laundry:   'Lavandería',
-    medical:   'Médico',
-    market:    'Mercado',
-    atm:       'Cajero / Banco',
-    transit:   'Transporte',
-    nightlife: 'Vida nocturna',
-  };
-
-  function getCatLabel(cat){
-    if(currentLang === 'es' && CAT_LABELS_ES[cat]) return CAT_LABELS_ES[cat];
-    return CAT[cat].label;
-  }
-
   function applyLang(){
     const s = STRINGS[currentLang];
     const btn = document.getElementById('langBtn');
