@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tu Oaxaca">
+<meta name="theme-color" content="#F4EDE0">
 <title>Tu Oaxaca — Local Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -294,7 +298,7 @@ html, body {
   font-size: .60rem;
   font-weight: 500;
   letter-spacing: .04em;
-  padding: 4px 11px;
+  padding: 6px 11px;
   border-radius: 20px;
   border: 1px solid var(--border);
   background: transparent;
@@ -302,6 +306,9 @@ html, body {
   cursor: pointer;
   transition: all .15s;
   white-space: nowrap;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
 }
 .ft:hover {
   border-color: var(--border3);
@@ -805,10 +812,12 @@ body.dark .pu-dir:hover { background: rgba(212,96,64,.06); }
 .mobile-card-bar     { height: 3px; width: 100%; flex-shrink: 0; }
 .mobile-card-body    { padding: 14px 16px 16px; }
 .mobile-card-close {
-  position: absolute; top: 10px; right: 12px;
+  position: absolute; top: 8px; right: 8px;
   background: none; border: none; cursor: pointer;
   color: var(--ink3); font-size: 18px; line-height: 1;
-  padding: 2px 6px; border-radius: 4px; z-index: 2;
+  padding: 8px; border-radius: 50%; z-index: 2;
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
 }
 .mobile-card-name {
   font-family: 'DM Serif Display', serif;
@@ -835,6 +844,50 @@ body.dark .pu-dir:hover { background: rgba(212,96,64,.06); }
 }
 .mobile-card-btn.primary { background: var(--terra); color: #fff; border-color: var(--terra); }
 @media(min-width:821px){ .mobile-card { display: none !important; } }
+
+/* ── iOS SAFARI FIXES ── */
+
+/* Remove blue tap flash on all interactive elements */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Momentum scrolling on the place list */
+.plist { -webkit-overflow-scrolling: touch; }
+.mobile-card { -webkit-overflow-scrolling: touch; }
+
+/* Search input — 16px prevents iOS auto-zoom */
+.search-box { font-size: 16px !important; }
+
+/* Remove 300ms tap delay on buttons/links */
+.ft, .map-btn, .mobile-card-btn, .mobile-card-close,
+.pc, .open-now-btn, .ph-toggle, .pc-gbp {
+  touch-action: manipulation;
+}
+
+/* Safe area insets — iPhone X+ home bar / notch */
+.panel {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media(max-width:820px) {
+  .panel {
+    padding-bottom: 0;
+    /* Bottom panel sits above home bar */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .mobile-card {
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+  .map-controls {
+    bottom: calc(52vh + 12px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Fix iOS position:fixed + transition rendering bug */
+.panel { will-change: height; }
+.mobile-card { will-change: transform, opacity; }
+
+/* iOS Safari elastic bounce — prevent overscroll on body */
+body { overscroll-behavior: none; }
+
 </style>
 </head>
 <body>
