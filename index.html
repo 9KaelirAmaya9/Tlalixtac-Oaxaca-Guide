@@ -3,313 +3,867 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Su Oaxaca — Local Guide</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,400;0,9..144,600;1,9..144,200;1,9..144,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>Tu Oaxaca — Local Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css"/>
+<!-- MarkerCluster.Default CSS disabled — using custom inline icons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <style>
+
+/* ─────────────────────────────────────────
+   DESIGN SYSTEM
+   Warm editorial — Condé Nast Traveler 
+   meets Oaxacan market pamphlet.
+   Light by default. Cream + terracotta + 
+   deep espresso. DM Serif Display headlines.
+───────────────────────────────────────── */
+
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
 :root {
-  --bg:     #090807;
-  --glass:  rgba(10,9,8,0.91);
-  --rim:    rgba(255,255,255,0.07);
-  --rim2:   rgba(255,255,255,0.13);
-  --text:   #EDE8DF;
-  --sub:    #5E574F;
-  --sub2:   #8A7F74;
-  --amber:  #C9933A;
-  --amber2: #E8B660;
-  /* category palette */
-  --food:     #D97B4F;
-  --activity: #4EA882;
-  --fitness:  #4D8FC4;
-  --laundry:  #9B68C0;
-  --medical:  #C44E4E;
-  --market:   #72B04F;
-  --atm:      #C4A030;
-  --transit:  #4E8EC4;
+  /* ── Light palette (default) ── */
+  --bg:         #F4EDE0;   /* aged parchment */
+  --bg2:        #EDE3D0;   /* slightly darker cream */
+  --surface:    #FDFAF4;   /* card white */
+  --surface2:   #F7F1E4;   /* hover */
+  --border:     rgba(120,70,30,0.12);
+  --border2:    rgba(120,70,30,0.22);
+  --border3:    rgba(120,70,30,0.35);
+
+  --ink:        #1C1008;   /* near-black espresso */
+  --ink2:       #5A3E28;   /* mid brown */
+  --ink3:       #9A7A58;   /* muted */
+  --ink4:       #C0A080;   /* very muted */
+
+  --terra:      #B84830;   /* Oaxacan terracotta — primary */
+  --terra2:     #D46040;   /* lighter terracotta */
+  --terra3:     #F0956A;   /* highlight */
+  --gold:       #9A7018;   /* mezcal gold */
+  --gold2:      #C09030;
+
+  /* category palette — warm, distinct */
+  --food:       #C05030;
+  --activity:   #3A7A50;
+  --fitness:    #2A5EA0;
+  --laundry:    #6A3E90;
+  --medical:    #A03030;
+  --market:     #4A7828;
+  --atm:        #907018;
+  --transit:    #2858A0;
+  --nightlife:  #7020A0;
+
+  /* panel dimensions */
+  --pw: 400px;
 }
-html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; transition:background .3s,color .3s; }
 
-/* ── LIGHT MODE ── */
-body.light {
-  --bg:    #F5F2ED;
-  --glass: rgba(245,242,237,0.93);
-  --rim:   rgba(0,0,0,0.08);
-  --rim2:  rgba(0,0,0,0.14);
-  --text:  #1A1612;
-  --sub:   #9A8E82;
-  --sub2:  #7A6E62;
-  --amber: #A8730A;
-  --amber2:#C48C1A;
+/* ── DARK MODE ── */
+body.dark {
+  --bg:       #100C08;
+  --bg2:      #180E08;
+  --surface:  #1C1208;
+  --surface2: #241A0C;
+  --border:   rgba(220,170,90,0.10);
+  --border2:  rgba(220,170,90,0.18);
+  --border3:  rgba(220,170,90,0.30);
+  --ink:      #F2E6CC;
+  --ink2:     #C4A870;
+  --ink3:     #7A6040;
+  --ink4:     #4A3820;
+  --terra:    #D46040;
+  --terra2:   #E8845A;
+  --terra3:   #F0A070;
+  --gold:     #C09030;
+  --gold2:    #E0B050;
+  --food:     #D06040;
+  --activity: #3A9060;
+  --fitness:  #3070C0;
+  --laundry:  #8050B8;
+  --medical:  #C04040;
+  --market:   #509030;
+  --atm:      #B09020;
+  --transit:  #2868C0;
+  --nightlife:#9030C8;
 }
-body.light .panel {
-  background:linear-gradient(170deg,rgba(248,245,240,.96) 0%,rgba(240,236,229,.98) 100%);
-  box-shadow:6px 0 70px rgba(0,0,0,.12), inset -1px 0 0 rgba(0,0,0,.06);
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Jost', sans-serif;
+  font-weight: 400;
+  transition: background .35s, color .35s;
 }
-body.light .noise { display:none; }
-body.light .pc:hover { background:rgba(0,0,0,.03); }
-body.light .pc.lit  { background:rgba(0,0,0,.05); }
-body.light .search-box { background:rgba(0,0,0,.04); color:var(--text); }
-body.light .leaflet-control-zoom a { background:rgba(248,245,240,.95) !important; color:rgba(30,24,18,.7) !important; border-color:rgba(0,0,0,.15) !important; }
-body.light .leaflet-control-zoom a:hover { color:var(--text) !important; border-color:rgba(0,0,0,.3) !important; }
-body.light .map-btn { background:rgba(248,245,240,.95) !important; color:rgba(30,24,18,.75) !important; border-color:rgba(0,0,0,.15) !important; }
-body.light .map-btn:hover { color:#1A1612 !important; border-color:rgba(0,0,0,.3) !important; }
-body.light .leaflet-popup-content-wrapper { background:rgba(248,245,240,.98) !important; border-color:rgba(0,0,0,.12) !important; }
-body.light .leaflet-popup-tip { background:rgba(248,245,240,.98) !important; }
-body.light .pu-name,.body.light .hpu-name { color:#1A1612 !important; }
-body.light .pu-row { color:rgba(26,22,18,.55) !important; }
-body.light .pu-tip { color:rgba(26,22,18,.45) !important; border-top-color:rgba(0,0,0,.08) !important; }
-body.light .pc-tip { color:rgba(26,22,18,.45); border-left-color:rgba(0,0,0,.1); background:rgba(0,0,0,.02); }
-body.light .ph-home { background:rgba(168,115,10,.07); border-color:rgba(168,115,10,.2); }
-body.light .pc-stars { color:#A8730A; }
-body.light .pc-hrs,.body.light .pc-addr { color:var(--sub); }
-body.light .grp-line { background:rgba(0,0,0,.08); }
-body.light .pu-gbp { background:rgba(0,0,0,.05); border-color:rgba(0,0,0,.12); color:#1A1612; }
-body.light .pu-gbp:hover { background:rgba(0,0,0,.09); }
 
-#map { position:fixed; inset:0; z-index:0; }
+/* ════════════════════════════════════════
+   MAP
+════════════════════════════════════════ */
+#map {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  left: var(--pw);
+  z-index: 0;
+  transition: left .3s ease;
+}
 
-/* noise texture */
-.noise { position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.4;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
-  mix-blend-mode:screen; }
+/* paper grain overlay */
+#map::after {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 1;
+  opacity: .018;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-/* ── LEFT PANEL ── */
+/* ════════════════════════════════════════
+   PANEL — the redesigned left slab
+════════════════════════════════════════ */
 .panel {
-  position:fixed; top:0; left:0; bottom:0; width:390px; z-index:20;
-  display:flex; flex-direction:column;
-  background:linear-gradient(170deg,rgba(14,12,10,.94) 0%,rgba(8,7,6,.97) 100%);
-  backdrop-filter:blur(40px) saturate(1.6);
-  border-right:1px solid var(--rim2);
-  box-shadow:6px 0 70px rgba(0,0,0,.7), inset -1px 0 0 rgba(255,255,255,.04);
-  animation:slideIn .5s cubic-bezier(.16,1,.3,1) both;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--pw);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border2);
+  box-shadow: 4px 0 40px rgba(60,20,0,0.10);
+  animation: panelIn .5s cubic-bezier(.16,1,.3,1) both;
+  overflow: hidden;
 }
-@keyframes slideIn { from{opacity:0;transform:translateX(-18px)} to{opacity:1;transform:translateX(0)} }
+@keyframes panelIn {
+  from { opacity:0; transform:translateX(-20px); }
+  to   { opacity:1; transform:translateX(0); }
+}
 
-/* header */
-.ph { padding:28px 28px 0; flex-shrink:0; }
-.ph-eye { font-size:.58rem; font-weight:500; letter-spacing:.22em; text-transform:uppercase; color:var(--amber); margin-bottom:10px; }
-.ph-title { font-family:'Fraunces',serif; font-size:2rem; font-weight:200; line-height:1.05; color:var(--text); }
-.ph-title em { font-style:italic; color:var(--amber2); font-weight:400; }
+/* ── decorative terracotta edge stripe ── */
+.panel-stripe {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom,
+    var(--terra) 0%,
+    var(--terra2) 40%,
+    var(--gold) 70%,
+    transparent 100%
+  );
+  opacity: .7;
+}
+
+/* ════════════════════════════════════════
+   HEADER  
+   Big editorial serif, generous padding,
+   printed-issue feel
+════════════════════════════════════════ */
+.ph {
+  padding: 28px 30px 0 34px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 22px;
+  position: relative;
+}
+
+.ph-kicker {
+  font-family: 'Jost', sans-serif;
+  font-size: .56rem;
+  font-weight: 600;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--terra);
+  margin-bottom: 9px;
+  opacity: .85;
+}
+
+.ph-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.8rem;
+  line-height: .92;
+  color: var(--ink);
+  letter-spacing: -.02em;
+  margin-bottom: 4px;
+}
+.ph-title span {
+  font-style: italic;
+  color: var(--terra);
+}
+
+.ph-sub {
+  font-size: .68rem;
+  font-weight: 300;
+  color: var(--ink3);
+  letter-spacing: .06em;
+  margin-top: 8px;
+  margin-bottom: 14px;
+}
+
+/* home address chip */
 .ph-home {
-  margin-top:12px; padding:10px 14px;
-  background:rgba(201,147,58,.08); border:1px solid rgba(201,147,58,.2); border-radius:8px;
-  font-size:.68rem; line-height:1.55; color:rgba(237,232,223,.5);
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 13px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--terra);
+  border-radius: 0 5px 5px 0;
+  font-size: .64rem;
+  line-height: 1.6;
+  color: var(--ink3);
 }
-.ph-home strong { color:var(--amber2); font-weight:500; display:block; margin-bottom:1px; }
+.ph-home strong {
+  display: block;
+  font-weight: 600;
+  color: var(--ink2);
+  font-size: .66rem;
+  margin-bottom: 1px;
+}
 
-/* search */
-.search-wrap { padding:14px 28px 0; flex-shrink:0; }
+/* mode toggle in header corner */
+.ph-toggle {
+  position: absolute;
+  top: 26px; right: 16px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  background: var(--bg2);
+  color: var(--ink3);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .18s;
+}
+.ph-toggle:hover {
+  border-color: var(--border3);
+  color: var(--terra);
+  background: var(--surface2);
+}
+
+/* ════════════════════════════════════════
+   SEARCH — magazine-style inline input
+════════════════════════════════════════ */
+.search-wrap {
+  padding: 16px 30px 0 34px;
+  flex-shrink: 0;
+}
+.search-inner {
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--ink4);
+  font-size: 13px;
+  pointer-events: none;
+}
 .search-box {
-  width:100%; background:rgba(255,255,255,.04); border:1px solid var(--rim2);
-  border-radius:8px; padding:8px 12px 8px 34px; font-family:'DM Sans',sans-serif;
-  font-size:.75rem; color:var(--text); outline:none; transition:border-color .15s;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%235E574F' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='5.5' cy='5.5' r='4'/%3E%3Cline x1='8.8' y1='8.8' x2='13' y2='13'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:11px center;
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 9px 12px 9px 34px;
+  font-family: 'Jost', sans-serif;
+  font-size: .76rem;
+  font-weight: 400;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
 }
-.search-box::placeholder { color:var(--sub); }
-.search-box:focus { border-color:rgba(201,147,58,.4); }
+.search-box::placeholder { color: var(--ink4); }
+.search-box:focus {
+  border-color: var(--terra);
+  box-shadow: 0 0 0 3px rgba(184,72,48,.08);
+}
 
-/* filter tabs */
-.ftabs { padding:14px 28px 0; flex-shrink:0; }
-.ftabs-lbl { font-size:.57rem; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--sub); margin-bottom:8px; }
-.ftrow { display:flex; gap:5px; flex-wrap:wrap; }
+/* ════════════════════════════════════════
+   FILTER PILLS — editorial category tabs
+════════════════════════════════════════ */
+.ftabs {
+  padding: 13px 30px 0 34px;
+  flex-shrink: 0;
+}
+.ftrow {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
 .ft {
-  font-family:'DM Sans',sans-serif; font-size:.63rem; font-weight:500; letter-spacing:.04em;
-  padding:5px 11px; border-radius:20px; border:1px solid var(--rim2);
-  background:transparent; color:var(--sub2); cursor:pointer; transition:all .17s; white-space:nowrap;
+  font-family: 'Jost', sans-serif;
+  font-size: .60rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
 }
-.ft:hover { border-color:rgba(255,255,255,.22); color:var(--text); }
-.ft.on { border-color:var(--ac,var(--amber)); background:rgba(201,147,58,.1); color:var(--ac,var(--amber)); }
-/* per-cat active tint */
-.ft[data-f="food"].on    { background:rgba(217,123,79,.12);  color:var(--food); }
-.ft[data-f="activity"].on{ background:rgba(78,168,130,.12);  color:var(--activity); }
-.ft[data-f="fitness"].on  { background:rgba(77,143,196,.12);  color:var(--fitness); }
-.ft[data-f="laundry"].on  { background:rgba(155,104,192,.12); color:var(--laundry); }
-.ft[data-f="medical"].on  { background:rgba(196,78,78,.12);   color:var(--medical); }
-.ft[data-f="market"].on   { background:rgba(114,176,79,.12);  color:var(--market); }
-.ft[data-f="atm"].on      { background:rgba(196,160,48,.12);  color:var(--atm); }
-.ft[data-f="transit"].on  { background:rgba(78,142,196,.12);  color:var(--transit); }
+.ft:hover {
+  border-color: var(--border3);
+  color: var(--ink2);
+  background: var(--surface2);
+}
+.ft.on {
+  background: var(--terra);
+  color: #fff;
+  border-color: var(--terra);
+}
+/* per-category active color */
+.ft[data-f="food"].on      { background:var(--food);      border-color:var(--food); }
+.ft[data-f="activity"].on  { background:var(--activity);  border-color:var(--activity); }
+.ft[data-f="fitness"].on   { background:var(--fitness);   border-color:var(--fitness); }
+.ft[data-f="laundry"].on   { background:var(--laundry);   border-color:var(--laundry); }
+.ft[data-f="medical"].on   { background:var(--medical);   border-color:var(--medical); }
+.ft[data-f="market"].on    { background:var(--market);    border-color:var(--market); }
+.ft[data-f="atm"].on       { background:var(--atm);       border-color:var(--atm); }
+.ft[data-f="transit"].on   { background:var(--transit);   border-color:var(--transit); }
+.ft[data-f="nightlife"].on { background:var(--nightlife); border-color:var(--nightlife); }
 
-/* divider */
-.divider { margin:14px 28px 0; height:1px; background:linear-gradient(to right,var(--rim2),transparent); flex-shrink:0; }
+/* ════════════════════════════════════════
+   COUNT LINE
+════════════════════════════════════════ */
+/* open now toggle */
+.open-now-row {
+  margin-top: 9px;
+}
+.open-now-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'Jost', sans-serif; font-size: .62rem; font-weight: 500;
+  color: var(--ink3); background: transparent;
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 4px 12px 4px 9px; cursor: pointer; transition: all .15s;
+  letter-spacing: .02em;
+}
+.open-now-btn:hover { border-color: var(--border3); color: var(--ink2); }
+.open-now-btn.active {
+  background: rgba(42,122,72,.08);
+  border-color: rgba(42,122,72,.35);
+  color: #2A7A48;
+}
+.open-now-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--ink4); flex-shrink: 0; transition: all .15s;
+}
+.open-now-btn.active .open-now-dot {
+  background: #2A7A48;
+  box-shadow: 0 0 5px #2A7A48;
+}
 
-/* count */
-.cline { padding:10px 28px 6px; display:flex; align-items:baseline; gap:6px; flex-shrink:0; }
-.cnum { font-family:'Fraunces',serif; font-size:1.4rem; font-weight:200; color:var(--text); }
-.clbl { font-size:.63rem; font-weight:300; color:var(--sub); letter-spacing:.08em; }
+.divider {
+  margin: 13px 30px 0 34px;
+  height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.cline {
+  padding: 10px 30px 4px 34px;
+  display: flex; align-items: baseline; gap: 7px;
+  flex-shrink: 0;
+}
+.cnum {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: var(--terra);
+  line-height: 1;
+}
+.clbl {
+  font-size: .58rem;
+  font-weight: 500;
+  color: var(--ink4);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
 
-/* list */
-.plist { flex:1; overflow-y:auto; padding-bottom:28px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.06) transparent; }
-.plist::-webkit-scrollbar { width:3px; }
-.plist::-webkit-scrollbar-thumb { background:rgba(255,255,255,.06); border-radius:2px; }
+/* ════════════════════════════════════════
+   LIST SCROLL AREA
+════════════════════════════════════════ */
+.plist {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 32px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.plist::-webkit-scrollbar { width: 3px; }
+.plist::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 2px;
+}
 
-/* group header */
+/* ════════════════════════════════════════
+   GROUP HEADERS — editorial section label
+════════════════════════════════════════ */
 .grp {
-  padding:14px 28px 5px; display:flex; align-items:center; gap:8px;
-  position:sticky; top:0; z-index:2;
-  background:linear-gradient(to bottom,rgba(8,7,6,.98) 60%,transparent);
+  padding: 18px 30px 7px 34px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: sticky; top: 0; z-index: 2;
+  background: var(--surface);
 }
-.grp-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
-.grp-lbl { font-size:.57rem; font-weight:500; letter-spacing:.18em; text-transform:uppercase; }
-.grp-line { flex:1; height:1px; background:var(--rim); }
+body.dark .grp { background: var(--surface); }
 
-/* card */
+.grp-label-wrap {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.grp-emoji { font-size: .9rem; }
+.grp-lbl {
+  font-family: 'DM Serif Display', serif;
+  font-size: .92rem;
+  font-weight: 400;
+  font-style: italic;
+}
+.grp-count {
+  font-family: 'Jost', sans-serif;
+  font-size: .54rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--ink4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1px 7px;
+  margin-left: 2px;
+}
+.grp-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ════════════════════════════════════════
+   CARDS — the main redesign
+   Warm surface, generous left padding,
+   subtle left bar in category color,
+   no rounded pills everywhere
+════════════════════════════════════════ */
 .pc {
-  padding:12px 28px; cursor:pointer; transition:background .12s;
-  border-bottom:1px solid rgba(255,255,255,.035); position:relative; overflow:hidden;
+  padding: 14px 26px 14px 34px;
+  cursor: pointer;
+  transition: background .12s;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
 }
-.pc::after {
-  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
-  background:var(--cc,transparent); transform:scaleY(0);
-  transition:transform .2s cubic-bezier(.4,0,.2,1); transform-origin:bottom;
+/* left color bar */
+.pc::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--cc, transparent);
+  opacity: 0;
+  transition: opacity .18s;
 }
-.pc:hover { background:rgba(255,255,255,.022); }
-.pc:hover::after { transform:scaleY(1); opacity:.5; }
-.pc.lit { background:rgba(255,255,255,.04); }
-.pc.lit::after { transform:scaleY(1); opacity:1; }
+.pc:hover { background: var(--surface2); }
+.pc:hover::before { opacity: .5; }
+.pc.lit { background: var(--bg2); }
+.pc.lit::before { opacity: 1; }
 
-.pc-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
-.pc-name { font-family:'Fraunces',serif; font-size:.93rem; font-weight:400; color:var(--text); line-height:1.25; flex:1; }
-.pc.lit .pc-name { color:#fff; }
-.pc-icon { font-size:.9rem; flex-shrink:0; margin-top:1px; }
-.pc-addr { font-size:.64rem; font-weight:300; color:var(--sub); margin-top:4px; line-height:1.4; }
-.pc-meta { display:flex; align-items:center; gap:10px; margin-top:5px; flex-wrap:wrap; }
-.pc-stars { font-size:.67rem; font-weight:500; color:var(--amber2); }
-.pc-stars span { color:var(--sub); font-weight:300; margin-left:2px; }
-.pc-hrs { font-size:.62rem; font-weight:300; color:var(--sub); }
+.pc-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.pc-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+  flex: 1;
+}
+.pc.lit .pc-name { color: var(--terra); }
+
+.pc-icon {
+  font-size: .85rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: .6;
+}
+.pc-addr {
+  font-size: .62rem;
+  font-weight: 400;
+  color: var(--ink4);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+.pc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.pc-stars {
+  font-size: .64rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+.pc-stars span {
+  color: var(--ink4);
+  font-weight: 400;
+  margin-left: 1px;
+}
+.pc-hrs {
+  font-size: .60rem;
+  font-weight: 400;
+  color: var(--ink4);
+}
+
+/* status badges — flat, typographic */
+.pc-open {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .56rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #2A7A48;
+  border: 1px solid rgba(42,122,72,.25);
+  background: rgba(42,122,72,.07);
+  border-radius: 3px; padding: 1px 6px;
+}
+.pc-open::before {
+  content: '';
+  width: 4px; height: 4px; border-radius: 50%;
+  background: #2A7A48;
+  box-shadow: 0 0 5px #2A7A48;
+  display: inline-block;
+}
+.pc-closed {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .56rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  border: 1px solid var(--border);
+  border-radius: 3px; padding: 1px 6px;
+}
+.pc-closed::before {
+  content: '';
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--ink4);
+  display: inline-block;
+}
+.pc-dist {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .56rem; font-weight: 600; letter-spacing: .04em;
+  color: var(--gold);
+  border: 1px solid rgba(154,112,24,.25);
+  background: rgba(154,112,24,.07);
+  border-radius: 3px; padding: 1px 6px;
+}
+
+/* insider tip — italic pull quote */
 .pc-tip {
-  font-size:.65rem; font-weight:300; font-style:italic; color:rgba(237,232,223,.36);
-  margin-top:6px; line-height:1.55; padding:6px 10px;
-  border-left:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.02); border-radius:0 4px 4px 0;
+  font-family: 'Libre Baskerville', serif;
+  font-size: .63rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink3);
+  margin-top: 8px;
+  line-height: 1.65;
+  padding-left: 10px;
+  border-left: 2px solid var(--terra);
+  opacity: .65;
 }
+
 .pc-gbp {
-  display:inline-flex; align-items:center; gap:5px; margin-top:8px;
-  font-size:.62rem; font-weight:500; letter-spacing:.04em; text-decoration:none;
-  color:var(--cc); border:1px solid currentColor; border-radius:20px;
-  padding:3px 10px 3px 8px; opacity:.7; transition:opacity .15s, background .15s;
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 9px;
+  font-size: .59rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; text-decoration: none;
+  color: var(--cc);
+  border: 1px solid currentColor;
+  border-radius: 3px; padding: 3px 9px 3px 7px;
+  opacity: .55; transition: opacity .15s;
 }
-.pc-gbp:hover { opacity:1; background:rgba(255,255,255,.05); }
-.pc-gbp svg { flex-shrink:0; }
-.pu-gbp {
-  display:inline-flex; align-items:center; gap:5px; margin-top:10px;
-  font-family:'DM Sans',sans-serif; font-size:.65rem; font-weight:500;
-  letter-spacing:.04em; text-decoration:none; color:inherit;
-  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
-  border-radius:20px; padding:5px 12px 5px 9px; transition:background .15s;
-  width:100%;
-}
-.pu-gbp:hover { background:rgba(255,255,255,.12); }
-.pu-gbp svg { flex-shrink:0; }
+.pc-gbp:hover { opacity: 1; }
+.pc-gbp svg { flex-shrink: 0; }
 
-/* ── POPUP ── */
+/* ════════════════════════════════════════
+   POPUP — warm card on map
+════════════════════════════════════════ */
 .leaflet-popup-content-wrapper {
-  background:rgba(10,9,8,.97) !important; backdrop-filter:blur(30px) saturate(1.5) !important;
-  border-radius:14px !important; padding:0 !important;
-  border:1px solid rgba(255,255,255,.11) !important;
-  box-shadow:0 24px 64px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.04) !important;
+  background: var(--surface) !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  border: 1px solid var(--border2) !important;
+  box-shadow: 0 16px 48px rgba(60,20,0,.18), 0 2px 8px rgba(60,20,0,.08) !important;
 }
-.leaflet-popup-tip { background:rgba(10,9,8,.97) !important; }
-.leaflet-popup-content { margin:0 !important; padding:0 !important; }
-.leaflet-popup-close-button { color:rgba(255,255,255,.22) !important; font-size:18px !important; top:12px !important; right:14px !important; padding:0 !important; width:auto !important; }
-.leaflet-popup-close-button:hover { color:rgba(255,255,255,.55) !important; }
+.leaflet-popup-tip { background: var(--surface) !important; }
+.leaflet-popup-content { margin: 0 !important; padding: 0 !important; }
+.leaflet-popup-close-button {
+  color: var(--ink4) !important;
+  font-size: 18px !important;
+  top: 10px !important; right: 12px !important;
+  padding: 0 !important; width: auto !important;
+}
+.leaflet-popup-close-button:hover { color: var(--ink) !important; }
 
-.pu { padding:17px 20px 15px; min-width:215px; max-width:295px; }
-.pu-name { font-family:'Fraunces',serif; font-size:1.06rem; font-weight:400; color:#fff; line-height:1.25; padding-right:20px; margin-bottom:5px; }
-.pu-cat { font-size:.59rem; font-weight:500; letter-spacing:.12em; text-transform:uppercase; margin-bottom:9px; }
-.pu-row { font-size:.7rem; font-weight:300; color:rgba(237,232,223,.5); line-height:1.5; }
-.pu-row+.pu-row { margin-top:2px; }
-.pu-tip { font-size:.67rem; font-style:italic; font-weight:300; color:rgba(237,232,223,.36); margin-top:9px; padding-top:9px; border-top:1px solid rgba(255,255,255,.07); line-height:1.5; }
+.pu { padding: 0; min-width: 220px; max-width: 295px; overflow: hidden; border-radius: 8px; }
+.pu-colorbar { height: 3px; width: 100%; background: var(--cc, var(--terra)); }
+.pu-body { padding: 15px 18px 14px; }
+.pu-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.08rem;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+  padding-right: 18px;
+  margin-bottom: 3px;
+}
+.pu-cat {
+  font-size: .52rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+  color: var(--cc);
+}
+.pu-row { font-size: .68rem; font-weight: 400; color: var(--ink3); line-height: 1.5; }
+.pu-row+.pu-row { margin-top: 2px; }
+.pu-tip {
+  font-family: 'Libre Baskerville', serif;
+  font-size: .64rem;
+  font-style: italic;
+  color: var(--ink3);
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border);
+  line-height: 1.55;
+  opacity: .7;
+}
+.pu-dir {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 6px;
+  font-size: .60rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 4px; padding: 6px 12px;
+  transition: all .15s; width: 100%;
+}
+.pu-dir:hover { color: var(--terra); border-color: var(--terra); background: rgba(184,72,48,.04); }
+body.dark .pu-dir:hover { background: rgba(212,96,64,.06); }
 
-/* ── ZOOM CTRL ── */
-.leaflet-control-zoom { border:none !important; box-shadow:0 4px 24px rgba(0,0,0,.5) !important; margin:0 18px 18px 0 !important; }
-.leaflet-control-zoom a { background:rgba(10,9,8,.88) !important; backdrop-filter:blur(12px) !important; color:rgba(237,232,223,.65) !important; border:1px solid var(--rim2) !important; width:36px !important; height:36px !important; line-height:34px !important; font-size:18px !important; transition:all .14s !important; }
-.leaflet-control-zoom a:hover { background:rgba(20,18,16,.95) !important; color:var(--text) !important; border-color:rgba(255,255,255,.22) !important; }
+.pu-gbp {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 12px;
+  font-size: .60rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink2);
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 4px; padding: 7px 12px;
+  transition: all .15s; width: 100%;
+}
+.pu-gbp:hover {
+  background: var(--terra);
+  color: #fff;
+  border-color: var(--terra);
+}
+
+/* ════════════════════════════════════════
+   MAP CONTROLS
+════════════════════════════════════════ */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 2px 12px rgba(60,20,0,.12) !important;
+  margin: 0 16px 16px 0 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--border2) !important;
+}
+.leaflet-control-zoom a {
+  background: var(--surface) !important;
+  color: var(--ink3) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  width: 34px !important; height: 34px !important;
+  line-height: 34px !important;
+  font-size: 17px !important;
+  transition: all .13s !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg2) !important;
+  color: var(--terra) !important;
+}
 .leaflet-control-attribution { display:none !important; }
 
-/* ── MAP BUTTONS ── */
 .map-btn {
-  display:flex; align-items:center; justify-content:center;
-  width:36px; height:36px; border-radius:8px; cursor:pointer;
-  background:rgba(10,9,8,.88); backdrop-filter:blur(12px);
-  border:1px solid var(--rim2); color:rgba(237,232,223,.65);
-  font-size:16px; transition:all .14s; box-shadow:0 2px 12px rgba(0,0,0,.4);
-  user-select:none;
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 6px;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--ink3);
+  font-size: 14px;
+  transition: all .14s;
+  box-shadow: 0 2px 8px rgba(60,20,0,.1);
+  user-select: none;
 }
-.map-btn:hover { background:rgba(20,18,16,.95); color:var(--text); border-color:rgba(255,255,255,.22); }
-.map-btn.active { color:var(--amber2); border-color:rgba(201,147,58,.5); background:rgba(201,147,58,.12); }
+.map-btn:hover { background: var(--bg2); color: var(--terra); border-color: var(--border3); }
+.map-btn.active { color: var(--terra); border-color: var(--terra); background: rgba(184,72,48,.08); }
 .map-controls {
-  position:fixed; bottom:18px; right:18px; z-index:19;
-  display:flex; flex-direction:column; gap:6px; align-items:flex-end;
+  position: fixed; bottom: 18px; right: 18px; z-index: 19;
+  display: flex; flex-direction: column; gap: 5px;
 }
 
-/* responsive */
-@media(max-width:820px){
-  .panel { width:100%; top:auto; bottom:0; height:52vh; border-right:none; border-top:1px solid var(--rim2); }
-  .ph,.search-wrap,.ftabs,.divider,.cline { padding-left:18px; padding-right:18px; }
-  .plist .pc,.plist .grp { padding-left:18px; padding-right:18px; }
-  #map { bottom:52vh; }
+/* ════════════════════════════════════════
+   MOBILE — bottom sheet
+════════════════════════════════════════ */
+@media(max-width:820px) {
+  :root { --pw: 100%; }
+  #map { left:0; bottom:52vh; transition:bottom .3s cubic-bezier(.4,0,.2,1); }
+  #map.collapsed { bottom:68px; }
+  #map.expanded  { bottom:92vh; }
+
+  .panel {
+    width:100%; top:auto; height:52vh;
+    border-right:none;
+    border-top: 2px solid var(--terra);
+    border-radius: 18px 18px 0 0;
+    transition: height .3s cubic-bezier(.4,0,.2,1);
+    touch-action: none;
+  }
+  .panel-stripe { display:none; }
+  .panel.collapsed { height:68px; }
+  .panel.expanded  { height:92vh; }
+
+  /* drag pill */
+  .panel::after {
+    content:''; display:block;
+    width:36px; height:3px;
+    background: var(--border3);
+    border-radius: 2px;
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    pointer-events:none;
+  }
+
+  .ph { padding:14px 20px 14px 20px; }
+  .ph-title { font-size:2rem; }
+  .ph-sub { display:none; }
+  .ph-home { display:none; }
+  .search-wrap, .ftabs, .divider, .cline { padding-left:20px; padding-right:20px; }
+  .plist .pc { padding-left:20px; padding-right:20px; }
+  .plist .grp { padding-left:20px; padding-right:20px; }
+  .ft { padding:6px 12px; font-size:.64rem; }
+  .pc { padding:13px 20px; }
+  .map-btn { width:40px; height:40px; }
+  .map-controls { bottom: calc(52vh + 12px); }
+  .map-controls.expanded { bottom:calc(92vh + 12px); }
+  .map-controls.collapsed { bottom:80px; }
+  .leaflet-control-zoom { margin-bottom:calc(52vh + 12px) !important; }
+  .search-box { font-size:16px; }
 }
+
+@media(max-width:390px) {
+  .ph-title { font-size:1.7rem; }
+}
+
+/* ════════════════════════════════════════
+   ENTRY ANIMATIONS — staggered card reveal
+════════════════════════════════════════ */
+.pc {
+  animation: cardIn .35s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
 </style>
 </head>
 <body>
-<div class="noise"></div>
 <div id="map"></div>
 
-<div class="map-controls">
-  <button class="map-btn" id="locBtn" title="My location" onclick="locateMe()">📍</button>
-  <button class="map-btn" id="themeBtn" title="Toggle light/dark" onclick="toggleTheme()">☀️</button>
+<div class="map-controls" id="mapControls">
+  <button class="map-btn" id="locBtn"   title="My location"    onclick="locateMe()">📍</button>
+  <button class="map-btn" id="themeBtn" title="Toggle dark/light" onclick="toggleTheme()">🌙</button>
 </div>
 
-<div class="panel">
+<div class="panel" id="panel">
+  <div class="panel-stripe"></div>
+
   <div class="ph">
-    <div class="ph-eye">Local Field Guide · Oaxaca</div>
-    <div class="ph-title">Su <em>Oaxaca</em></div>
-    <div class="ph-home"><strong>🏠 Hotel De Las Lunas</strong>98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera, Oaxaca</div>
+    <div class="ph-kicker">Campo · Oaxaca · México</div>
+    <div class="ph-title">Tu <span>Oaxaca</span></div>
+    <div class="ph-sub">70 places · curated for guests</div>
+    <div class="ph-home">
+      <div>
+        <strong>🏠 Casa Dos Lunas</strong>
+        98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera
+      </div>
+    </div>
+    <button class="ph-toggle" id="toggleBtn" onclick="toggleTheme()" title="Toggle dark/light">🌙</button>
   </div>
 
   <div class="search-wrap">
-    <input class="search-box" id="srch" type="text" placeholder="Search places…" oninput="doSearch(this.value)">
+    <div class="search-inner">
+      <span class="search-icon">⌕</span>
+      <input class="search-box" id="srch" type="text"
+             placeholder="Search places, neighborhoods…"
+             oninput="doSearch(this.value)">
+    </div>
   </div>
 
   <div class="ftabs">
-    <div class="ftabs-lbl">Category</div>
     <div class="ftrow" id="ftrow">
-      <button class="ft on" data-f="all"      style="--ac:var(--amber)"    onclick="filt('all',this)">All</button>
-      <button class="ft"    data-f="food"     onclick="filt('food',this)">🍽 Eat</button>
-      <button class="ft"    data-f="activity" onclick="filt('activity',this)">🌿 Do</button>
-      <button class="ft"    data-f="fitness"  onclick="filt('fitness',this)">💪 Gym</button>
-      <button class="ft"    data-f="laundry"  onclick="filt('laundry',this)">👕 Laundry</button>
-      <button class="ft"    data-f="medical"  onclick="filt('medical',this)">🏥 Medical</button>
-      <button class="ft"    data-f="market"   onclick="filt('market',this)">🛒 Market</button>
-      <button class="ft"    data-f="atm"      onclick="filt('atm',this)">💳 ATM</button>
-      <button class="ft"    data-f="transit"  onclick="filt('transit',this)">🚌 Transit</button>
+      <button class="ft on" data-f="all"       style="--ac:var(--terra)"  onclick="filt('all',this)">All</button>
+      <button class="ft"    data-f="food"      onclick="filt('food',this)">🍽 Eat</button>
+      <button class="ft"    data-f="activity"  onclick="filt('activity',this)">🌿 Do</button>
+      <button class="ft"    data-f="fitness"   onclick="filt('fitness',this)">💪 Gym</button>
+      <button class="ft"    data-f="laundry"   onclick="filt('laundry',this)">👕 Laundry</button>
+      <button class="ft"    data-f="medical"   onclick="filt('medical',this)">🏥 Medical</button>
+      <button class="ft"    data-f="market"    onclick="filt('market',this)">🛒 Market</button>
+      <button class="ft"    data-f="atm"       onclick="filt('atm',this)">💳 ATM</button>
+      <button class="ft"    data-f="transit"   onclick="filt('transit',this)">🚌 Transit</button>
+      <button class="ft"    data-f="nightlife" onclick="filt('nightlife',this)">🍸 Nightlife</button>
     </div>
   </div>
 
   <div class="divider"></div>
-  <div class="cline"><div class="cnum" id="cnt">0</div><div class="clbl">places near you</div></div>
+  <div class="cline">
+    <div class="cnum" id="cnt">0</div>
+    <div class="clbl">places</div>
+  </div>
 
   <div class="plist" id="plist"></div>
 </div>
 
+
 <script>
-// ── CONFIG ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  // Safety: wait for Leaflet if it hasn't loaded yet (slow CDN edge case)
+  if (typeof L === 'undefined') {
+    var waited = 0;
+    var waitForL = setInterval(function() {
+      waited += 50;
+      if (typeof L !== 'undefined') { clearInterval(waitForL); init(); }
+      else if (waited > 8000) { clearInterval(waitForL); console.error('Leaflet failed to load'); }
+    }, 50);
+  } else { init(); }
+  function init(){
+
 const HOME = { lat:17.0606387, lng:-96.655188 };
 
 const CAT = {
-  food:     { color:'#D97B4F', label:'Eat & Drink',   emoji:'🍽' },
-  activity: { color:'#4EA882', label:'Things To Do',  emoji:'🌿' },
-  fitness:  { color:'#4D8FC4', label:'Workout',       emoji:'💪' },
-  laundry:  { color:'#9B68C0', label:'Laundry',       emoji:'👕' },
-  medical:  { color:'#C44E4E', label:'Medical',       emoji:'🏥' },
-  market:   { color:'#72B04F', label:'Market',        emoji:'🛒' },
-  atm:      { color:'#C4A030', label:'ATM / Bank',    emoji:'💳' },
-  transit:  { color:'#4E8EC4', label:'Bus / Transit', emoji:'🚌' },
+  food:     { color:'#C05030', label:'Eat & Drink',   emoji:'🍽' },
+  activity: { color:'#2A7850', label:'Things To Do',  emoji:'🌿' },
+  fitness:  { color:'#1E5EA0', label:'Workout',       emoji:'💪' },
+  laundry:  { color:'#6A3EA8', label:'Laundry',       emoji:'👕' },
+  medical:  { color:'#A82828', label:'Medical',       emoji:'🏥' },
+  market:   { color:'#3A7818', label:'Market',        emoji:'🛒' },
+  atm:      { color:'#886010', label:'ATM / Bank',    emoji:'💳' },
+  transit:  { color:'#1E5EA8', label:'Bus / Transit', emoji:'🚌' },
+  nightlife:{ color:'#701888', label:'Nightlife',     emoji:'🍸' },
 };
 
-const CAT_ORDER = ['food','activity','fitness','laundry','medical','market','atm','transit'];
+const CAT_ORDER = ['food','activity','fitness','laundry','medical','market','atm','transit','nightlife'];
 
 const DATA = [
   // ── FOOD ──
@@ -381,19 +935,76 @@ const DATA = [
   { id:56, cat:'food', name:'A la Antigüita Cantaritos',         addr:'Progreso 301, Santa Lucía del Camino',            lat:17.0634678, lng:-96.6962558, r:4.3, rc:52,  h:'Tue–Sun 12pm–10pm',           tip:'Fun casual spot — quesabirria, birria tacos, buffalo wings. Great for a group lunch or dinner. Good drinks selection too.', gid:'ChIJSWiqF2Ejx4UR8GIE0x0Ybqg' },
   { id:57, cat:'food', name:'Los Adobes',                        addr:'Los Árboles 305, Santa Lucía del Camino',         lat:17.0608281, lng:-96.6912962, r:4.3, rc:180, h:'Daily 8am–6pm',               tip:'Spacious family restaurant near the highway — good for breakfast before Walmart, live music on Sundays. Large groups welcome.', gid:'ChIJu5mwYb8jx4URrp4WY2LDA_4' },
     { id:40, cat:'transit', name:'Terminal Sur — Central Abastos', addr:'De Valerio Trujano 808A, Libertad, Oaxaca',  lat:17.061528,  lng:-96.7343212, r:3.8, rc:1096, h:'Daily 4am–1am', tip:'Local and regional buses (colectivos). Cheaper than ADO. Take a yellow taxi at this terminal.', gid:'ChIJ47t9OBMix4URleHhdnQTYpU' },
+  // ── NIGHTLIFE ──
+  { id:58, cat:'nightlife', name:'Mezcal Speakeasy',              addr:'Av. José María Morelos 900, Centro Oaxaca',  lat:17.0624202, lng:-96.7230382, r:5.0, rc:5,    h:'Open 24 hours',               tip:'The real deal — intimate guided mezcal experience in a hidden room. Fernando & Gerardo explain history, culture and pour rare bottles. Book ahead.',                     gid:'ChIJo7uj9q8jx4URZR8auFUh88c' },
+  { id:59, cat:'nightlife', name:'Sobrio by Mezcal Speakeasy',    addr:'C. Porfirio Díaz 310, Centro Oaxaca',        lat:17.0646316, lng:-96.7259695, r:4.6, rc:208,  h:'Daily 4pm–11:30pm',           tip:'Speakeasy-style cocktail bar — best Oaxagroni in the city. DJ nights turn into dancing. Ask for Brisnia, she knows her mezcal inside out.',                            gid:'ChIJx5ZKBj4jx4UR2OtJYEh5qNk' },
+  { id:60, cat:'nightlife', name:'El Espacio Cocktail & Mezcal',  addr:'Reforma 502a, Centro Oaxaca',                lat:17.0658414, lng:-96.7215960, r:4.7, rc:204,  h:'Daily 6pm–2am',               tip:'Best cocktail bar in centro — creative mezcal cocktails, moody electronic soundtrack, never overcrowded. The Suspiro is unmissable. Open till 2am.',                   gid:'ChIJ7-NGIpMjx4URQpPj9R9oWOw' },
+  { id:61, cat:'nightlife', name:'MEZCALOGIA',                    addr:'Manuel García Vigil 509, Centro Oaxaca',     lat:17.0662668, lng:-96.7247606, r:4.5, rc:599,  h:'Daily 4pm–midnight',          tip:'Serious mezcal bar — 350 MXN tasting flight covers 4 regions. Live music some nights. Ask for Javier or Noe for a personalized pour.',                                gid:'ChIJq6qqqj8ix4UR-7FGkKp8jWQ' },
+  { id:62, cat:'nightlife', name:'La Mezcaloteca',                addr:'Reforma 506, Centro Oaxaca',                 lat:17.066159,  lng:-96.721519,  r:4.5, rc:434,  h:'Mon–Fri 2–9pm · Sat–Sun 4–9pm', tip:'Most educational mezcal tasting room in Oaxaca — 10 tastings for two ~1,300 MXN. Patricia is outstanding. Not a bar, an experience. Reserve ahead.',            gid:'ChIJnezCXDkix4UR_jluwvRYSJg' },
+  { id:63, cat:'nightlife', name:'Mezcalería In Situ',            addr:'Reforma 306, Centro Oaxaca',                 lat:17.0641161, lng:-96.722038,  r:4.5, rc:495,  h:'Mon–Fri 2–10pm · Sat 2–11pm', tip:'Hundreds of bottles, knowledgeable staff, attached bottle shop. One of the oldest mezcalerias in the city. Great for buying bottles to take home.',               gid:'ChIJB5U3Uj4ix4URyPDNh8_uuKI' },
+  { id:64, cat:'nightlife', name:'Cortijo La Mezcalería',         addr:'5 de Mayo 411, Centro Oaxaca',               lat:17.0650391, lng:-96.7230286, r:4.7, rc:424,  h:'Daily 12pm–10pm',             tip:'Most romantic mezcalería in centro — gorgeous decor, comfortable seats (rare!), small-batch family mezcals. Perfect for a date night. Basic tasting 180 MXN.',          gid:'ChIJcSxtKD8ix4URl6TIAPU0mD0' },
+  { id:65, cat:'nightlife', name:'Mezcal Tasting Room by Gül-Roo',addr:'Labastida 115-Local 7, Centro Oaxaca',       lat:17.0649571, lng:-96.7233517, r:5.0, rc:213,  h:'Mon–Sat 11am–7:30pm · Sun 1–3pm', tip:'Hidden 5-star gem — family-run, bottles designed by local artists, try cricket/worm/ant salt. Ask for Isabel. One of the best kept secrets in Oaxaca.',         gid:'ChIJ3agwe1Ejx4URuQRPcfhFzPE' },
+  { id:66, cat:'nightlife', name:'La Mezcalería (Armando\'s)',     addr:'Miguel Hidalgo 1119, Centro Oaxaca',         lat:17.0602404, lng:-96.7211292, r:5.0, rc:348,  h:'Mon–Fri 3–10pm · Sat 3–11pm', tip:'Intimate gem run by Armando — like drinking at a knowledgeable friend\'s house. Focuses on women-owned distilleries. Tamales from across the street welcome.',      gid:'ChIJrbJIQ_Mjx4URe7NFnbSWF6c' },
+  { id:67, cat:'nightlife', name:'La Casa del Mezcal',            addr:'Flores Magón 209, Centro Oaxaca',            lat:17.0588203, lng:-96.7261719, r:4.4, rc:1349, h:'Daily 10am–2am',              tip:'Legendary old-school cantina — dark, woodsy, jukebox, no tourists, real Oaxaca. Open till 2am. Cash only. One of the most authentic bars in the city.',               gid:'ChIJF8H5REAix4URRurXA-8OvUQ' },
+  { id:68, cat:'nightlife', name:'Océano Shows & Drinks',         addr:'Mariano Matamoros 201, Centro Oaxaca',       lat:17.064111,  lng:-96.7253463, r:4.8, rc:444,  h:'Wed–Sun evenings',            tip:'Most joyful bar in Oaxaca — incredible drag performances, neon art, electric local crowd. A must-do for a memorable night. Go after 10pm.',                           gid:'ChIJr9TNSHQjx4UR2rkiftFOypY' },
+  { id:69, cat:'nightlife', name:'Bar La Tentación',              addr:'Mariano Matamoros 101, Centro Oaxaca',       lat:17.0640127, lng:-96.7246818, r:4.0, rc:639,  h:'Wed–Sun 9:30pm–3am',          tip:'Best live salsa & cumbia in Oaxaca — band starts at 11:15pm, small dance floor, mostly locals. Cheap cover ~35 MXN. Show up ready to dance.',                        gid:'ChIJvYvR4j4ix4URWtfMRKdVcws' },
+  { id:70, cat:'nightlife', name:'Blackcherry Club',              addr:'Armenta y López 203, Centro Oaxaca',         lat:17.0605963, lng:-96.7238153, r:4.1, rc:665,  h:'Wed–Thu 8pm–3am · Fri–Sat 8pm–3am · Sun 8pm–2am', tip:'Best nightclub in Oaxaca — DJ, big dance floor, most LGBTQ+ friendly venue in the city. Gets packed after 11pm. Cash only.',                                 gid:'ChIJaz6dlo8jx4URJHmTSy0QRYA' },
+  // ── NEW ADDITIONS ──
+  { id:71, cat:'food',     name:'Alva Restaurante Café',          addr:'Carretera Internacional km 10.5, San Antonio 7ma Secc, Tlalixtac', lat:17.0592738, lng:-96.6600283, r:4.4, rc:18,  h:'Tue–Sun 8am–5pm · Mon closed',       tip:'Lovely garden brunch spot right near the Airbnb — chilaquiles, French toast, great drinks. Tables in the garden are perfect for a slow morning. Has WiFi and parking.',    gid:'ChIJ-Rj2N_clx4URC4kEEXnsKlI' },
+  { id:72, cat:'food',     name:'Chili Guajili San Sebastián Tutla', addr:'Carr. Internacional 13, San Sebastián Tutla', lat:17.0631104, lng:-96.6724983, r:4.7, rc:604, h:'Daily 8am–10pm',                      tip:'One of the best family restaurants near Tlalixtac — 4.7★ with 600+ reviews. Outstanding enchiladas, huevos rancheros, horchata. Has a 2-story kids play area with an on-staff nanny. Biking distance from El Tule.',  gid:'ChIJPTW3LQAlx4URkcbEwXAwZXM' },
+  { id:73, cat:'market',   name:'Mandadito Oaxaqueño',            addr:'Carr. Internacional, San Francisco Tutla',   lat:17.0621257, lng:-96.6679004, r:4.5, rc:8,   h:'Mon–Sat 6:30am–11pm · Sun 7am–11pm', tip:'Convenient convenience store right on the Carretera — open from 6:30am for early morning essentials. Quick stop for drinks, snacks, and daily basics.',                 gid:'ChIJEecK_csfx4URH3N_qVlNE8o' },
+  { id:74, cat:'laundry',  name:'Lavandería Liam',                addr:'Av. Ferrocarril #6, San Sebastián Tutla',   lat:17.0575939, lng:-96.6664626, r:5.0, rc:4,   h:'Daily 8am–8pm',                      tip:'Perfect 5-star laundry — drop off dirty clothes and pick up next day, clean, folded, and smelling fresh. Couple-run, very kind and professional. Offers home pickup and delivery. Call ahead: +52 951 398 4537.', gid:'ChIJhd9i098jx4URNbMDsaKS3Ns' },
+
+  // ── BINNIBUS & LOCAL TRANSIT ──
+  { id:75, cat:'transit', name:'Base BinniBus Tlalixtac',             addr:'San Miguel 1ra Secc, Tlalixtac de Cabrera',          lat:17.0744110, lng:-96.6484770, r:null, rc:null, h:'Daily 6:30am–10pm',          tip:'BinniBus base right in Tlalixtac — 8 MXN flat fare to Oaxaca centro. Buses are clean, punctual and air-conditioned. Buy a prepaid card at the Viguera terminal to avoid needing exact change.', gid:'ChIJswdbpRAkx4URRRgrGJaLUZ8' },
+  { id:76, cat:'transit', name:'Terminal BinniBus Viguera',           addr:'Carr. Cristóbal Colón 3909, San Jacinto Amilpas',     lat:17.1263889, lng:-96.7678906, r:4.7, rc:22,   h:'Daily 6:30am–10pm',          tip:'Main BinniBus terminal — punctual service, clean buses, clean bathrooms. Has card recharge machines. 8 MXN flat fare, Routes 1 and 6 both serve the corridor. Call: +52 951 567 1087.', gid:'ChIJ88gSCAAfx4URWsQEpSGFshY' },
+  { id:77, cat:'transit', name:'Base BinniBus Santa Cruz Amilpas',    addr:'Santa Cruz Amilpas, Oaxaca',                          lat:17.0555680, lng:-96.6844850, r:null, rc:null, h:'Daily 6:30am–10pm',          tip:'BinniBus stop in Santa Cruz Amilpas — useful transfer point between Tlalixtac corridor and the city. 8 MXN flat fare.', gid:'ChIJQabkD5Yjx4URzp3fYUUaZso' },
+  { id:78, cat:'transit', name:'Terminal CityBus San Sebastián Tutla',addr:'Cabecera Municipal San Sebastián Tutla',              lat:17.0559407, lng:-96.6710256, r:5.0, rc:2,   h:'Daily ~6am–10:30pm',         tip:'CityBus terminal serving San Sebastián Tutla — connects to Oaxaca centro for 8 MXN. Useful if coming from or heading to the Carretera corridor.', gid:'ChIJAdY1WwAjx4URSE3gj7Hv82A' },
+  // ── MEDICAL / PHARMACY ──
+  { id:79, cat:'medical', name:'Farmacias Similares Tlalixtac',       addr:'C. Gregorio N. Chávez 10-A, San Miguel 1ra Secc',     lat:17.0727206, lng:-96.6488312, r:4.5, rc:2,   h:'Mon–Sat 8am–10pm · Sun 9am–9pm', tip:'Closest pharmacy to Tlalixtac centre — open late every day. Good for basic medicines, vitamins and OTC medication. Has affiliated low-cost doctor consultations.', gid:'ChIJxyNReSolx4URwOsspgJL_DQ' },
+  { id:80, cat:'medical', name:'Farmacia Platino',                    addr:'De Camino Nacional 6, San Sebastián Tutla',           lat:17.0606517, lng:-96.6668698, r:5.0, rc:1,   h:'Call ahead for hours',        tip:'Local pharmacy in San Sebastián Tutla. Call ahead to confirm hours: +52 951 517 8108.', gid:'ChIJcdr_PaQjx4UREo0VKVJpNUk' },
+  // ── FOOD — new nearby gems ──
+  { id:81, cat:'food',    name:'El Pinche de la Panadera y el Chef',  addr:'Carr. Internacional 16, San Sebastián Tutla',         lat:17.0637838, lng:-96.6734805, r:4.4, rc:229, h:'Mon–Sat 8am–4pm · Sun 24hrs', tip:'Beloved local spot on the Carretera — wood-fired pizzas, great salads, berry & goat cheese, amazing horchata. Bread is incredible. Perfect for breakfast or lunch on a Walmart run. Prices are very fair.', gid:'ChIJb9rHsF0kx4URFhgprBtgIGc' },
+  // ── GAS STATION ──
+  { id:82, cat:'market',  name:'COMBUSTIBLES HERSA (Gas Station)',    addr:'Av. Ferrocarril 119, Santa Cruz Amilpas',             lat:17.0573151, lng:-96.6823452, r:4.5, rc:147, h:'Open 24 hours',              tip:'Best-rated gas station in the corridor — 24 hours, good service, has a small café/restaurant on site. Reviewers note fuel prices are competitive. Clean bathrooms.', gid:'ChIJVwWu6JEjx4UR3RkdE7OvEgQ' },
+  // ── ACTIVITY / SPORTS ──
+  { id:83, cat:'activity', name:'Sports Stadium Tlalixtac',           addr:'Miguel Cabrera S/N, San Antonio 7ma Secc, Tlalixtac', lat:17.0747222, lng:-96.6506189, r:4.3, rc:197, h:'Daily 6am–10pm',             tip:'Free outdoor sports complex steps from Tlalixtac centre — running track, football and basketball courts, kids play equipment. Quiet and safe. Great for a morning jog.', gid:'ChIJBf8QcxAkx4UROlLnXNXQEds' },
+  { id:84, cat:'activity', name:'Deportivo IMSS Tlalixtac',           addr:'Cam. del Tarrastro, La Trinidad 6ta Secc, Tlalixtac', lat:17.0600755, lng:-96.6439189, r:4.5, rc:157, h:'Tue–Sun 9am–5pm · Mon closed', tip:'Stunning IMSS sports complex with a heated pool (~30m), changing rooms, basketball/tennis courts and gardens. About 100 MXN entry. Bring your own drinks. Almost empty on weekdays — feels like a private resort.', gid:'ChIJkfi6XGokx4URKktB6WW6Bzs' },
+  // ── VETERINARY ──
+  { id:85, cat:'medical', name:'Veterinaria Tlalixtac',               addr:'C. Miguel Cabrera, San Antonio 7ma Secc, Tlalixtac',  lat:17.0752093, lng:-96.6520740, r:4.8, rc:56,  h:'Mon 12–7pm · Tue–Fri 10am–2:30pm & 4–7pm · Sat 10am–4pm', tip:'The best vet in Oaxaca per long-term residents — empathetic, honest, clean, fair prices. Explains everything clearly. Call ahead: +52 951 695 1492. Not open Sundays.', gid:'ChIJEZnDAIIlx4URzsxPmgf2HDI' },
+
+  // ── OXXO ──
+  { id:86, cat:'market', name:'OXXO Deportivo',   addr:'Carr. Internacional 146, San Francisco Tutla',      lat:17.0624026, lng:-96.6699870, r:3.6, rc:106, h:'Open 24 hours', tip:'Closest 24hr OXXO to the Airbnb on the Carretera — coffee machines, snacks, phone top-ups, bill payments, ATM. Good for late-night runs.', gid:'ChIJV4uFsYwjx4UR8j1CkGOc1n4' },
+  { id:87, cat:'market', name:'OXXO Sebastian',   addr:'Av. Lázaro Cárdenas 122, San Sebastián Tutla',     lat:17.0639048, lng:-96.6801775, r:3.5, rc:40,  h:'Open 24 hours', tip:'24hr OXXO in San Sebastián Tutla — handy for the Tutla corridor. Correspondent banking, coffee, quick snacks. Mixed service reviews so go with patience.', gid:'ChIJ4SXZYOsjx4URoSedKffFyhk' },
+  { id:88, cat:'market', name:'OXXO Calicanto',   addr:'Av. Lázaro Cárdenas 847, Santa Lucía del Camino',  lat:17.0647774, lng:-96.6966793, r:4.1, rc:193, h:'Open 24 hours', tip:'Best-rated OXXO in the corridor — 4.1★ with 193 reviews, fast service, well-stocked, clean. Great for a Walmart-run stop. Has parking and Spin card points.', gid:'ChIJWQ-37ekjx4URQlazcK6FjQk' },
+
+  // ── NEW RESTAURANTS — Tlalixtac & surrounds ──
+  { id:89,  cat:'food', name:'Caldo de Piedra',               addr:'Carretera al Tule Cristóbal Colón 116, Tlalixtac',      lat:17.0507394, lng:-96.6450186, r:4.5, rc:1628, h:'Tue–Sun 9am–6pm · Mon closed',    tip:'One of the most unique dining experiences near Oaxaca — pre-Hispanic stone soup cooked by dropping a hot river rock into your bowl. Staff explain the Chinantec tradition. 1,600+ reviews. Worth every peso.',  gid:'ChIJkzfBqW8kx4URzjqBmIYJjRw' },
+  { id:90,  cat:'food', name:'La Palapa de Raúl',             addr:'Camino Analco 1, San Antonio 7ma Secc, Tlalixtac',       lat:17.0586110, lng:-96.6603173, r:4.5, rc:1043, h:'Mon & Wed–Fri 12–7pm · Sat–Sun 9am–7pm · Tue closed', tip:'Authentic Oaxacan institution with 1,000+ reviews — sopa de guías, mole, traditional dishes cooked with love. Locals consider it an underrated gem. Beto runs a tight ship. Medium prices, generous portions.', gid:'ChIJL3OLrokjx4URJIcBsh4zUsc' },
+  { id:91,  cat:'food', name:'La Tichinda Cocina de Mar',     addr:'Camino al Ojo de Agua 1, La Trinidad 4ta Secc, Tlalixtac', lat:17.0476697, lng:-96.6457964, r:4.5, rc:277, h:'Daily 11:30am–7pm',              tip:'Hidden seafood gem down a country lane — camarones, pulpo, complimentary mezcal and tichinda tamale on arrival. Reviewers call it one of the best seafood meals in Mexico. Dress casually, arrive hungry.', gid:'ChIJc-fd-mYkx4URxf9kffYTdL0' },
+  { id:92,  cat:'food', name:'Comedor La Azucena',            addr:'Carretera a Gortalco km 3.8, San Antonio 7ma Secc',       lat:17.0916507, lng:-96.6550557, r:4.4, rc:607, h:'Daily 9am–6:30pm',                tip:'Beloved comedor up by the Presa dams — terrace with views over the water, enchiladas, Oaxacan classics, very affordable. Packed on weekends. Great for lunch after the presas walk.', gid:'ChIJo5w-xagmx4URpVIc04N1BDg' },
+  { id:93,  cat:'food', name:'Las Jacarandas',                addr:'Carretera a Guelatao 500, San Antonio 7ma Secc',          lat:17.0897123, lng:-96.6551042, r:4.2, rc:733, h:'Daily 9:30am–6:30pm',              tip:'Reliable open-air Oaxacan restaurant near the presas — great tlayudas, fresh juice, generous portions at fair prices. 700+ reviews. Good for groups. Juice bar attached.', gid:'ChIJc2sZ96gmx4UR-ZCi4NmPQKw' },
+  { id:94,  cat:'food', name:'Antojitos Tapatíos El Birriero',addr:'Diag. de Calicanto, El Bosque Norte, Santa Lucía',        lat:17.0651266, lng:-96.6965434, r:4.5, rc:241, h:'Mon & Wed–Sat 9am–6pm · Sun 8am–5pm · Tue closed', tip:'Best birria in the corridor — 4.5★ with 241 reviews. Fried pork belly with guacamole is addictive. Meat falls apart. Owner is warm and welcoming. Great for a Walmart-area lunch.', gid:'ChIJAbLW4mojx4URExULckTVoAo' },
+  { id:95,  cat:'food', name:'Casa Juliana',                  addr:'Mártires de Chapultepec, Barrio San Miguel, Tlalixtac',   lat:17.0780463, lng:-96.6499987, r:3.8, rc:145, h:'Fri 9am–1pm · Sat–Sun 9am–5pm · Mon–Thu closed', tip:'Traditional weekend brunch spot in Tlalixtac — sopa de guías, salsa mortajada, beautiful shaded garden. Hidden and not well-advertised but a lovely local experience. Cash only.', gid:'ChIJt88SbYwlx4URgsJ3Gs9xhDI' },
+  { id:96,  cat:'food', name:'El Jardín Secreto',             addr:'Tlalixtac de Cabrera, Oaxaca',                            lat:17.0548203, lng:-96.6646578, r:4.3, rc:26,  h:'Daily 10am–7pm',                   tip:'Quiet garden restaurant in Tlalixtac — traditional Oaxacan food, green spaces, playground for kids. Low-key, local clientele. Great for a relaxed lunch away from tourists.', gid:'ChIJraugxYkjx4URI2pJ0kEIv1Q' },
+
+  // ── ADDITIONAL LOCAL SPOTS ──
+  { id:97,  cat:'food',   name:'Marisquería Cristal',  addr:'Lib. 5 Señores - Tlalixtac 1000, San Miguel 2da Secc', lat:17.0576686, lng:-96.6584430, r:5.0, rc:5,  h:'Call ahead — hours vary',    tip:'Hidden 5★ seafood spot steps from the Airbnb — everything fresh and prepared to order. Cantaritos are excellent. Small family operation, no parking, but reviewers unanimously recommend it. A true neighbourhood gem.', gid:'ChIJtdgIQvYlx4URUjJQksMLkxg' },
+  { id:98,  cat:'food',   name:'Pepa Pig',              addr:'Internacional 21, San Antonio 7ma Secc, Tlalixtac',    lat:17.0580977, lng:-96.6588019, r:3.9, rc:64, h:'Mon–Sat 8am–5pm · Sun closed', tip:'Very cheap local comedor steps away — pot beans with dried beef, handmade tortillas and champurrado for 90 MXN. Pure neighbourhood cooking. Go with cash and low expectations on decor; it is about the food.', gid:'ChIJqf4vDHQkx4URUldJxpFy0Ck' },
+  { id:99,  cat:'food',   name:'Pollos Don Pepe',       addr:'Lib. 5 Señores - Tlalixtac, San Miguel 2da Secc',     lat:17.0575158, lng:-96.6585556, r:3.7, rc:66, h:'Daily 11am–7pm',              tip:'Cheap rotisserie chicken right near home — large portions at good prices. Tip: always check your chicken is cooked through before leaving (a few reviewers noted undercooked birds). The salsa is good. Cash preferred.', gid:'ChIJPZJxB3Qkx4URdOLfDtxFzRw' },
 ];
 
-let darkTiles, labelTiles, lightTiles;
+let warmTiles, darkTiles, labelTiles, lightTiles;
 // ── MAP ──────────────────────────────────────────────
 const map = L.map('map',{ center:[HOME.lat+.003, HOME.lng-.02], zoom:14, zoomControl:false, preferCanvas:true });
 L.control.zoom({ position:'bottomright' }).addTo(map);
-darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{ maxZoom:19, subdomains:'abcd' }).addTo(map);
-labelTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{ maxZoom:19, subdomains:'abcd', pane:'overlayPane' }).addTo(map);
+warmTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{ maxZoom:19, subdomains:'abcd' }).addTo(map);
+darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{ maxZoom:19, subdomains:'abcd' });
 
 // ── ICONS ────────────────────────────────────────────
 function mkIcon(cat, lit) {
   const c = CAT[cat].color, s = lit ? 28 : 17;
-  const border = lit ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.32)';
+  const border = lit ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.8)';
   const glow = lit ? `0 0 0 5px ${c}28,0 0 0 10px ${c}10,0 5px 18px rgba(0,0,0,.6)` : '0 2px 8px rgba(0,0,0,.55)';
   return L.divIcon({ className:'', iconSize:[s,s], iconAnchor:[s/2,s/2],
     html:`<div style="width:${s}px;height:${s}px;background:${c};border:2px solid ${border};border-radius:50%;box-shadow:${glow};transition:all .25s cubic-bezier(.34,1.56,.64,1);cursor:pointer;"></div>` });
@@ -410,7 +1021,7 @@ function homeIcon(){
 // home marker
 L.marker([HOME.lat,HOME.lng],{icon:homeIcon(),zIndexOffset:9999})
   .addTo(map)
-  .bindPopup(`<div class="pu"><div class="pu-name">🏠 Hotel De Las Lunas</div><div class="pu-row">98 Primera los Compadres</div><div class="pu-row">San Miguel 2da Secc, Tlalixtac de Cabrera, Oaxaca</div></div>`,{maxWidth:280,offset:[0,-12]});
+  .bindPopup(`<div class="pu"><div class="pu-colorbar" style="background:var(--terra,#B84830)"></div><div class="pu-body"><div class="pu-name">🏠 Casa Dos Lunas</div><div class="pu-row">98 Primera los Compadres</div><div class="pu-row">San Miguel 2da Secc, Tlalixtac de Cabrera</div></div></div>`,{maxWidth:280,offset:[0,-12]});
 
 const PIN_SVG = '📍';
 const EXT_SVG = '↗';
@@ -418,28 +1029,68 @@ const EXT_SVG = '↗';
 function gbpUrl(p){ return `https://www.google.com/maps/place/?q=place_id:${p.gid}`; }
 
 function puHtml(p){
-  const stars=p.r?`<div class="pu-row">⭐ ${p.r} <span style="color:rgba(237,232,223,.3);margin-left:3px;">(${p.rc} reviews)</span></div>`:'';
-  const link=p.gid?`<a class="pu-gbp" href="${gbpUrl(p)}" target="_blank" rel="noopener">${PIN_SVG} Open in Google Maps ${EXT_SVG}</a>`:'';
+  const stars=p.r?`<div class="pu-row">⭐ ${p.r} <span style="opacity:.45">(${p.rc})</span></div>`:'';
+  const link=p.gid?`<a class="pu-gbp" href="${gbpUrl(p)}" target="_blank" rel="noopener">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    View on Google Maps
+  </a>`:'';
+  const dir=`<a class="pu-dir" href="https://www.google.com/maps/dir/${HOME.lat},${HOME.lng}/${p.lat},${p.lng}" target="_blank" rel="noopener">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg>
+    Directions from Casa Dos Lunas
+  </a>`;
   return `<div class="pu">
-    <div class="pu-name">${p.name}</div>
-    <div class="pu-cat" style="color:${CAT[p.cat].color}">${CAT[p.cat].emoji} ${CAT[p.cat].label}</div>
-    ${stars}
-    <div class="pu-row">⏰ ${p.h}</div>
-    ${p.tip?`<div class="pu-tip">${p.tip}</div>`:''}
-    ${link}
+    <div class="pu-colorbar" style="background:${CAT[p.cat].color}"></div>
+    <div class="pu-body">
+      <div class="pu-name">${p.name}</div>
+      <div class="pu-cat" style="color:${CAT[p.cat].color}">${CAT[p.cat].emoji} ${CAT[p.cat].label}</div>
+      ${stars}
+      <div class="pu-row">📍 ${p.addr}</div>
+      ${p.h?`<div class="pu-row">🕐 ${p.h}</div>`:''}
+      ${p.tip?`<div class="pu-tip">${p.tip}</div>`:''}
+      ${link}${dir}
+    </div>
   </div>`;
 }
 
 const MKS={};
-DATA.forEach(p=>{
-  const m=L.marker([p.lat,p.lng],{icon:mkIcon(p.cat,false)}).addTo(map);
-  m.bindPopup(puHtml(p),{maxWidth:300,offset:[0,-5]});
-  m.on('click',()=>{ activate(p.id,false); scrollCard(p.id); });
-  MKS[p.id]=m;
-});
+  const clusterGroup = L.markerClusterGroup({
+    maxClusterRadius:50, showCoverageOnHover:false,
+    zoomToBoundsOnClick:true, spiderfyOnMaxZoom:true,
+    iconCreateFunction: function(cluster){
+      const n = cluster.getChildCount();
+      const size = n < 10 ? 34 : n < 30 ? 40 : 46;
+      const fontSize = n < 10 ? '13px' : n < 30 ? '12px' : '11px';
+      return L.divIcon({
+        html: `<div style="
+          width:${size}px; height:${size}px;
+          background: #B84830;
+          border: 2.5px solid #fff;
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          font-family: 'Jost', sans-serif;
+          font-weight: 700;
+          font-size: ${fontSize};
+          color: #fff;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.35), 0 0 0 4px rgba(184,72,48,0.22);
+          letter-spacing: -0.5px;
+        ">${n}</div>`,
+        className: '',
+        iconSize: [size, size],
+        iconAnchor: [size/2, size/2]
+      });
+    }
+  });
+  DATA.forEach(p=>{
+    const m=L.marker([p.lat,p.lng],{icon:mkIcon(p.cat,false)});
+    m.bindPopup(puHtml(p),{maxWidth:300,offset:[0,-5]});
+    m.on('click',()=>{ activate(p.id,false); scrollCard(p.id); });
+    MKS[p.id]=m;
+    clusterGroup.addLayer(m);
+  });
+  map.addLayer(clusterGroup);
 
 // ── STATE ─────────────────────────────────────────────
-let curFilt='all', activeId=null, searchTerm='';
+let curFilt='all', activeId=null, searchTerm='', showOpenOnly=false;
 
 function activate(id, fromCard){
   if(activeId!==null){
@@ -464,7 +1115,109 @@ function filt(f,btn){
   refresh();
 }
 
-function doSearch(val){
+// ── OPEN NOW ────────────────────────────────────────────
+function isOpenNow(h) {
+  if (!h) return null;
+  const hl = h.toLowerCase();
+  if (hl.includes('open 24') || hl.includes('24 hour') || hl.includes('24hrs')) return true;
+  if (hl.includes('hours vary') || hl.includes('open daily') || hl.includes('early morning')) return null;
+
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun,1=Mon...6=Sat
+  const mins = now.getHours() * 60 + now.getMinutes();
+
+  const dayNames = ['sun','mon','tue','wed','thu','fri','sat'];
+  const todayStr = dayNames[day];
+
+  // split multiple segments by ·
+  const segments = h.split('·');
+  for (const seg of segments) {
+    const s = seg.toLowerCase().trim();
+    // check if this segment applies to today
+    const dayRanges = [
+      { keys: ['mon–fri','mon-fri'], days: [1,2,3,4,5] },
+      { keys: ['mon–sat','mon-sat'], days: [1,2,3,4,5,6] },
+      { keys: ['mon–sun','daily','every day'], days: [0,1,2,3,4,5,6] },
+      { keys: ['sat–sun','sat-sun','weekends'], days: [0,6] },
+      { keys: ['tue–sun','tue-sun'], days: [0,2,3,4,5,6] },
+      { keys: ['thu–sun','thu-sun'], days: [0,4,5,6] },
+      { keys: ['mon & wed–sun'], days: [0,1,2,3,4,5,6] },
+      { keys: ['sundays only'], days: [0] },
+      { keys: ['mon'], days: [1] },
+      { keys: ['tue'], days: [2] },
+      { keys: ['wed'], days: [3] },
+      { keys: ['thu'], days: [4] },
+      { keys: ['fri'], days: [5] },
+      { keys: ['sat'], days: [6] },
+      { keys: ['sun'], days: [0] },
+    ];
+    let appliesToday = false;
+    // check closed days
+    if (s.includes('closed')) {
+      for (const dr of dayRanges) {
+        if (dr.keys.some(k => s.includes(k)) && dr.days.includes(day)) return false;
+      }
+      continue;
+    }
+    for (const dr of dayRanges) {
+      if (dr.keys.some(k => s.includes(k)) && dr.days.includes(day)) { appliesToday = true; break; }
+    }
+    if (!appliesToday) {
+      // fallback: segment has no day indicator, assume it applies
+      if (!/mon|tue|wed|thu|fri|sat|sun|daily|every/.test(s)) appliesToday = true;
+    }
+    if (!appliesToday) continue;
+
+    // parse time range
+    const timeMatch = s.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*[–\-]\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+    if (!timeMatch) return null;
+    let [,sh,sm,sap,eh,em,eap] = timeMatch;
+    const toMins = (h,m,ap) => {
+      let hh = parseInt(h); const mm = parseInt(m||0);
+      if (ap && ap.toLowerCase()==='pm' && hh!==12) hh+=12;
+      if (ap && ap.toLowerCase()==='am' && hh===12) hh=0;
+      if (!ap) { if (hh < 6) hh += 12; } // assume pm for ambiguous afternoon hours
+      return hh*60+mm;
+    };
+    const startM = toMins(sh,sm,sap||eap);
+    const endM = toMins(eh,em,eap);
+    if (mins >= startM && mins <= endM) return true;
+  }
+  return false;
+}
+
+// ── DISTANCE ────────────────────────────────────────────
+let userLat = null, userLng = null;
+let distCache = {};
+
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371000, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function fmtDist(m){
+  if (m < 300) return Math.round(m/10)*10 + 'm walk';
+  if (m < 1200) return Math.round(m/100)/10 + ' km walk';
+  const driveMin = Math.round(m/400); // ~24km/h average
+  return driveMin + ' min drive';
+}
+
+function updateDistances(){
+  if(userLat===null) return;
+  DATA.forEach(p=>{
+    distCache[p.id] = haversine(userLat,userLng,p.lat,p.lng);
+  });
+  refresh();
+}
+
+function toggleOpenNow(btn){
+    showOpenOnly = !showOpenOnly;
+    btn.classList.toggle('active', showOpenOnly);
+    refresh();
+  }
+
+  function doSearch(val){
   searchTerm=val.toLowerCase();
   curFilt='all';
   document.querySelectorAll('.ft').forEach(b=>b.classList.remove('on'));
@@ -477,7 +1230,7 @@ function refresh(){
   if(curFilt!=='all') list=list.filter(p=>p.cat===curFilt);
   if(searchTerm) list=list.filter(p=>p.name.toLowerCase().includes(searchTerm)||p.addr.toLowerCase().includes(searchTerm)||(p.tip||'').toLowerCase().includes(searchTerm));
   document.getElementById('cnt').textContent=list.length;
-  DATA.forEach(p=>{ const visible=list.find(x=>x.id===p.id); visible?map.addLayer(MKS[p.id]):map.removeLayer(MKS[p.id]); });
+  DATA.forEach(p=>{ const visible=list.find(x=>x.id===p.id); if(visible){try{clusterGroup.addLayer(MKS[p.id]);}catch(e){}}else{try{clusterGroup.removeLayer(MKS[p.id]);}catch(e){}} });
   render(list);
   activate(null,true);
 }
@@ -492,20 +1245,26 @@ function render(list){
   CAT_ORDER.forEach(cat=>{
     const grp=grouped[cat]; if(!grp.length) return;
     const hd=document.createElement('div'); hd.className='grp';
-    hd.innerHTML=`<div class="grp-dot" style="background:${CAT[cat].color};box-shadow:0 0 6px ${CAT[cat].color}80;"></div><div class="grp-lbl" style="color:${CAT[cat].color}">${CAT[cat].emoji} ${CAT[cat].label}</div><div class="grp-line"></div>`;
+    hd.innerHTML=`<div class="grp-label-wrap"><span class="grp-emoji">${CAT[cat].emoji}</span><span class="grp-lbl" style="color:${CAT[cat].color}">${CAT[cat].label}</span><span class="grp-count">${grp.length}</span></div><div class="grp-rule"></div>`;
     el.appendChild(hd);
-    grp.forEach(p=>{
+    grp.forEach((p,pi)=>{
       const d=document.createElement('div'); d.className='pc'; d.id='c'+p.id;
+      d.style.animationDelay=(n+pi)*.03+'s';
       d.style.setProperty('--cc',CAT[p.cat].color);
       const stars=p.r?`<div class="pc-stars">⭐ ${p.r}<span>(${p.rc})</span></div>`:'';
       const link=p.gid?`<a class="pc-gbp" href="${gbpUrl(p)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${PIN_SVG} Google Maps ${EXT_SVG}</a>`:'';
+      const openState = isOpenNow(p.h);
+      const openBadge = openState===true ? `<span class="pc-open">Open now</span>`
+                      : openState===false ? `<span class="pc-closed">Closed</span>` : '';
+      const dist = distCache[p.id];
+      const distBadge = dist!==undefined ? `<span class="pc-dist">📍 ${fmtDist(dist)}</span>` : '';
       d.innerHTML=`
         <div class="pc-top">
           <div class="pc-name">${p.name}</div>
           <div class="pc-icon">${CAT[p.cat].emoji}</div>
         </div>
         <div class="pc-addr">${p.addr}</div>
-        <div class="pc-meta">${stars}<div class="pc-hrs">⏰ ${p.h.split('·')[0].trim()}</div></div>
+        <div class="pc-meta">${stars}<div class="pc-hrs">${p.h ? '🕐 ' + p.h.split('·')[0].trim() : ''}</div>${openBadge}${distBadge}</div>
         ${p.tip?`<div class="pc-tip">${p.tip}</div>`:''}
         ${link}
       `;
@@ -538,6 +1297,8 @@ function locateMe() {
       map.flyTo([lat, lng], 16, { duration:.9 });
       btn.textContent = '📍';
       btn.classList.add('active');
+      userLat = lat; userLng = lng;
+      updateDistances();
     },
     err => {
       btn.textContent = '📍';
@@ -548,27 +1309,101 @@ function locateMe() {
 }
 
 // ── THEME TOGGLE ────────────────────────────────────────
-let isLight = false;
-
+// Default: light mode. Dark mode = body.dark class.
 function toggleTheme() {
-  isLight = !isLight;
-  document.body.classList.toggle('light', isLight);
-  document.getElementById('themeBtn').textContent = isLight ? '🌙' : '☀️';
-
-  if (isLight) {
-    map.removeLayer(darkTiles);
-    map.removeLayer(labelTiles);
-    if (!lightTiles) {
-      lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-        { maxZoom:19, subdomains:'abcd' });
-    }
-    lightTiles.addTo(map);
+  const nowDark = document.body.classList.toggle('dark');
+  const icon = nowDark ? '☀️' : '🌙';
+  document.getElementById('themeBtn').textContent = icon;
+  const tb = document.getElementById('toggleBtn'); if(tb) tb.textContent = icon;
+  if (nowDark) {
+    if (map.hasLayer(warmTiles)) map.removeLayer(warmTiles);
+    if (!map.hasLayer(darkTiles)) darkTiles.addTo(map);
   } else {
-    if (lightTiles) map.removeLayer(lightTiles);
-    darkTiles.addTo(map);
-    labelTiles.addTo(map);
+    if (map.hasLayer(darkTiles)) map.removeLayer(darkTiles);
+    if (!map.hasLayer(warmTiles)) warmTiles.addTo(map);
   }
 }
+
+// ── MOBILE PANEL DRAG ────────────────────────────────────
+(function(){
+  const panel = document.querySelector('.panel');
+  const mapEl = document.getElementById('map');
+  const isMobile = () => window.innerWidth <= 820;
+  let startY=0, startH=0, dragging=false;
+
+  function setHeight(vh, animate){
+    if(!isMobile()) return;
+    const px = window.innerHeight * vh / 100;
+    if(animate) panel.style.transition = 'height .3s cubic-bezier(.4,0,.2,1)';
+    else panel.style.transition = 'none';
+    panel.style.height = px + 'px';
+    mapEl.style.bottom = px + 'px';
+    updateMapControls(px);
+  }
+
+  function updateMapControls(panelPx){
+    const ctrl = document.querySelector('.map-controls');
+    if(ctrl) ctrl.style.bottom = (panelPx + 12) + 'px';
+    const zoom = document.querySelector('.leaflet-control-zoom');
+    if(zoom) zoom.style.marginBottom = (panelPx + 12) + 'px';
+  }
+
+  function snapTo(vh){ setHeight(vh, true); }
+
+  panel.addEventListener('touchstart', e=>{
+    if(!isMobile()) return;
+    startY = e.touches[0].clientY;
+    startH = panel.offsetHeight;
+    dragging = true;
+    panel.style.transition = 'none';
+  }, {passive:true});
+
+  panel.addEventListener('touchmove', e=>{
+    if(!dragging || !isMobile()) return;
+    const dy = startY - e.touches[0].clientY;
+    const newH = Math.max(72, Math.min(window.innerHeight * 0.92, startH + dy));
+    panel.style.height = newH + 'px';
+    mapEl.style.bottom = newH + 'px';
+    updateMapControls(newH);
+  }, {passive:true});
+
+  panel.addEventListener('touchend', e=>{
+    if(!dragging || !isMobile()) return;
+    dragging = false;
+    const h = panel.offsetHeight;
+    const vh = h / window.innerHeight * 100;
+    // snap to nearest: collapsed(~10), half(52), expanded(92)
+    if(vh < 25) snapTo(10);
+    else if(vh < 72) snapTo(52);
+    else snapTo(92);
+    setTimeout(()=>{ if(map) map.invalidateSize(); }, 320);
+  }, {passive:true});
+
+  // double-tap header to expand/collapse
+  let lastTap = 0;
+  panel.querySelector('.ph').addEventListener('click', ()=>{
+    if(!isMobile()) return;
+    const now = Date.now();
+    if(now - lastTap < 300){
+      const h = panel.offsetHeight;
+      const vh = h / window.innerHeight * 100;
+      snapTo(vh > 60 ? 10 : 92);
+      setTimeout(()=>{ if(map) map.invalidateSize(); }, 320);
+    }
+    lastTap = now;
+  });
+
+  // init map controls position on mobile
+  window.addEventListener('resize', ()=>{
+    if(isMobile()) updateMapControls(panel.offsetHeight);
+    else {
+      panel.style.height = '';
+      mapEl.style.bottom = '';
+      document.querySelector('.map-controls').style.bottom = '';
+    }
+  });
+  if(isMobile()) setTimeout(()=>updateMapControls(panel.offsetHeight), 100);
+})();
 
 // init
 refresh();
@@ -577,6 +1412,15 @@ refresh();
 const s=document.createElement('style');
 s.textContent='@keyframes hp{0%{transform:scale(.6);opacity:.8}100%{transform:scale(2.4);opacity:0}}';
 document.head.appendChild(s);
+  // ── Expose functions to global scope for inline onclick handlers ──
+  window.filt          = filt;
+  window.doSearch      = doSearch;
+  window.locateMe      = locateMe;
+  window.toggleTheme   = toggleTheme;
+  window.toggleOpenNow = toggleOpenNow;
+
+  } // end init()
+}); // end DOMContentLoaded
 </script>
 </body>
 </html>
