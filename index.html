@@ -888,6 +888,26 @@ body.dark .pu-dir:hover { background: rgba(212,96,64,.06); }
 /* iOS Safari elastic bounce — prevent overscroll on body */
 body { overscroll-behavior: none; }
 
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle {
+  position: absolute;
+  top: 26px; right: 58px;
+  height: 34px; padding: 0 11px;
+  border-radius: 17px;
+  border: 1px solid var(--border2);
+  background: var(--bg2);
+  color: var(--ink3);
+  font-family: 'Jost', sans-serif;
+  font-size: .60rem; font-weight: 600;
+  letter-spacing: .08em;
+  cursor: pointer; transition: all .18s;
+  touch-action: manipulation;
+  display: flex; align-items: center;
+}
+.lang-toggle:hover { border-color: var(--border3); color: var(--terra); }
+.lang-toggle.es { color: var(--terra); border-color: rgba(184,72,48,.3); background: rgba(184,72,48,.06); }
+
 </style>
 </head>
 <body>
@@ -919,6 +939,7 @@ body { overscroll-behavior: none; }
       </div>
     </div>
     <button class="ph-toggle" id="toggleBtn" onclick="toggleTheme()" title="Toggle dark/light">🌙</button>
+    <button class="lang-toggle" id="langBtn" onclick="toggleLang()" title="Switch language">ES</button>
   </div>
 
   <div class="search-wrap">
@@ -1155,17 +1176,17 @@ function puHtml(p){
   const stars=p.r?`<div class="pu-row">⭐ ${p.r} <span style="opacity:.45">(${p.rc})</span></div>`:'';
   const link=p.gid?`<a class="pu-gbp" href="${gbpUrl(p)}" target="_blank" rel="noopener">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-    View on Google Maps
+    ${STRINGS[currentLang].view_maps}
   </a>`:'';
   const dir=`<a class="pu-dir" href="https://www.google.com/maps/dir/${HOME.lat},${HOME.lng}/${p.lat},${p.lng}" target="_blank" rel="noopener">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg>
-    Directions from Casa Dos Lunas
+    ${STRINGS[currentLang].directions}
   </a>`;
   return `<div class="pu">
     <div class="pu-colorbar" style="background:${CAT[p.cat].color}"></div>
     <div class="pu-body">
       <div class="pu-name">${p.name}</div>
-      <div class="pu-cat" style="color:${CAT[p.cat].color}">${CAT[p.cat].emoji} ${CAT[p.cat].label}</div>
+      <div class="pu-cat" style="color:${CAT[p.cat].color}">${CAT[p.cat].emoji} ${getCatLabel(p.cat)}</div>
       ${stars}
       <div class="pu-row">📍 ${p.addr}</div>
       ${p.h?`<div class="pu-row">🕐 ${p.h}</div>`:''}
@@ -1382,7 +1403,7 @@ function render(list){
   CAT_ORDER.forEach(cat=>{
     const grp=grouped[cat]; if(!grp.length) return;
     const hd=document.createElement('div'); hd.className='grp';
-    hd.innerHTML=`<div class="grp-label-wrap"><span class="grp-emoji">${CAT[cat].emoji}</span><span class="grp-lbl" style="color:${CAT[cat].color}">${CAT[cat].label}</span><span class="grp-count">${grp.length}</span></div><div class="grp-rule"></div>`;
+    hd.innerHTML=`<div class="grp-label-wrap"><span class="grp-emoji">${CAT[cat].emoji}</span><span class="grp-lbl" style="color:${CAT[cat].color}">${getCatLabel(cat)}</span><span class="grp-count">${grp.length}</span></div><div class="grp-rule"></div>`;
     el.appendChild(hd);
     grp.forEach((p,pi)=>{
       const d=document.createElement('div'); d.className='pc'; d.id='c'+p.id;
@@ -1391,8 +1412,10 @@ function render(list){
       const stars=p.r?`<div class="pc-stars">⭐ ${p.r}<span>(${p.rc})</span></div>`:'';
       const link=p.gid?`<a class="pc-gbp" href="${gbpUrl(p)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${PIN_SVG} Google Maps ${EXT_SVG}</a>`:'';
       const openState = isOpenNow(p.h);
-      const openBadge = openState===true ? `<span class="pc-open">Open now</span>`
-                      : openState===false ? `<span class="pc-closed">Closed</span>` : '';
+      const openBadge = openState===true
+                        ? `<span class="pc-open">${STRINGS[currentLang].open_badge}</span>`
+                        : openState===false
+                        ? `<span class="pc-closed">${STRINGS[currentLang].closed_badge}</span>` : '';
       const dist = distCache[p.id];
       const distBadge = dist!==undefined ? `<span class="pc-dist">📍 ${fmtDist(dist)}</span>` : '';
       d.innerHTML=`
@@ -1584,14 +1607,14 @@ document.head.appendChild(s);
 
     body.innerHTML = `
       <div class="mobile-card-name">${p.name}</div>
-      <div class="mobile-card-cat" style="color:${color}">${CAT[p.cat].emoji} ${CAT[p.cat].label}</div>
+      <div class="mobile-card-cat" style="color:${color}">${CAT[p.cat].emoji} ${getCatLabel(p.cat)}</div>
       ${stars}${addr}${hrs}${tip}
       <div class="mobile-card-actions">
         <a class="mobile-card-btn primary" href="${mapsUrl}" target="_blank" rel="noopener">
-          📍 Google Maps
+          ${STRINGS[currentLang].maps_btn}
         </a>
         <a class="mobile-card-btn" href="${dirUrl}" target="_blank" rel="noopener">
-          ↗ Directions
+          ${STRINGS[currentLang].dir_btn}
         </a>
       </div>`;
 
@@ -1624,6 +1647,137 @@ document.head.appendChild(s);
 
   // Remove the popupclose snap since we're not using popups on mobile
   // map.on('popupclose'...) removed
+
+
+  // ══════════════════════════════════════════════════
+  // LANGUAGE SYSTEM — EN / ES
+  // ══════════════════════════════════════════════════
+  let currentLang = 'en';
+
+  const STRINGS = {
+    en: {
+      kicker:       'Campo · Oaxaca · México',
+      title_top:    'Tu',
+      title_em:     'Oaxaca',
+      sub:          '99 places · curated for guests',
+      home_name:    '🏠 Casa Dos Lunas',
+      home_addr:    '98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera',
+      search_ph:    'Search places, neighborhoods…',
+      filter_lbl:   '',
+      open_now:     'Show open now only',
+      places:       'places',
+      all:          'All',
+      food:         '🍽 Eat',
+      activity:     '🌿 Do',
+      fitness:      '💪 Gym',
+      laundry:      '👕 Laundry',
+      medical:      '🏥 Medical',
+      market:       '🛒 Market',
+      atm:          '💳 ATM',
+      transit:      '🚌 Transit',
+      nightlife:    '🍸 Nightlife',
+      view_maps:    'View on Google Maps',
+      directions:   'Directions from Casa Dos Lunas',
+      maps_btn:     '📍 Google Maps',
+      dir_btn:      '↗ Directions',
+      open_badge:   'Open now',
+      closed_badge: 'Closed',
+    },
+    es: {
+      kicker:       'Campo · Oaxaca · México',
+      title_top:    'Tu',
+      title_em:     'Oaxaca',
+      sub:          '99 lugares · seleccionados para huéspedes',
+      home_name:    '🏠 Casa Dos Lunas',
+      home_addr:    '98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera',
+      search_ph:    'Buscar lugares, colonias…',
+      filter_lbl:   '',
+      open_now:     'Solo lugares abiertos ahora',
+      places:       'lugares',
+      all:          'Todo',
+      food:         '🍽 Comer',
+      activity:     '🌿 Hacer',
+      fitness:      '💪 Gym',
+      laundry:      '👕 Lavandería',
+      medical:      '🏥 Médico',
+      market:       '🛒 Mercado',
+      atm:          '💳 Cajero',
+      transit:      '🚌 Transporte',
+      nightlife:    '🍸 Vida nocturna',
+      view_maps:    'Ver en Google Maps',
+      directions:   'Cómo llegar desde Casa Dos Lunas',
+      maps_btn:     '📍 Google Maps',
+      dir_btn:      '↗ Cómo llegar',
+      open_badge:   'Abierto',
+      closed_badge: 'Cerrado',
+    }
+  };
+
+  // Spanish translations for category labels (used in cards + popups)
+  const CAT_LABELS_ES = {
+    food:      'Comer y beber',
+    activity:  'Qué hacer',
+    fitness:   'Ejercicio',
+    laundry:   'Lavandería',
+    medical:   'Médico',
+    market:    'Mercado',
+    atm:       'Cajero / Banco',
+    transit:   'Transporte',
+    nightlife: 'Vida nocturna',
+  };
+
+  function getCatLabel(cat){
+    if(currentLang === 'es' && CAT_LABELS_ES[cat]) return CAT_LABELS_ES[cat];
+    return CAT[cat].label;
+  }
+
+  function applyLang(){
+    const s = STRINGS[currentLang];
+    const btn = document.getElementById('langBtn');
+    btn.textContent = currentLang === 'en' ? 'ES' : 'EN';
+    btn.classList.toggle('es', currentLang === 'es');
+
+    // Header
+    document.querySelector('.ph-kicker').textContent = s.kicker;
+    const title = document.querySelector('.ph-title');
+    if(title) title.innerHTML = s.title_top + ' <span>' + s.title_em + '</span>';
+    const sub = document.querySelector('.ph-sub');
+    if(sub) sub.textContent = s.sub;
+    const home = document.querySelector('.ph-home div');
+    if(home) home.innerHTML = '<strong>' + s.home_name + '</strong>' + s.home_addr;
+
+    // Search
+    const srch = document.getElementById('srch');
+    if(srch) srch.placeholder = s.search_ph;
+
+    // Filter buttons
+    const ftMap = {all:'all',food:'food',activity:'activity',fitness:'fitness',
+      laundry:'laundry',medical:'medical',market:'market',atm:'atm',
+      transit:'transit',nightlife:'nightlife'};
+    Object.keys(ftMap).forEach(key => {
+      const btn = document.querySelector('[data-f="' + key + '"]');
+      if(btn) btn.textContent = s[key] || key;
+    });
+
+    // Open now button
+    const onBtn = document.getElementById('openNowBtn');
+    if(onBtn){
+      onBtn.innerHTML = '<span class="open-now-dot"></span>' + s.open_now;
+    }
+
+    // Count label
+    const clbl = document.querySelector('.clbl');
+    if(clbl) clbl.textContent = s.places;
+
+    // Re-render list with new language
+    refresh();
+  }
+
+  function toggleLang(){
+    currentLang = currentLang === 'en' ? 'es' : 'en';
+    applyLang();
+  }
+  window.toggleLang = toggleLang;
 
   window.filt          = filt;
   window.doSearch      = doSearch;
