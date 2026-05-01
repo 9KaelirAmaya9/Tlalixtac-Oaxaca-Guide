@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Su Oaxaca — Local Guide</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <button id="sheetToggle" class="sheet-toggle" type="button" aria-expanded="true">Hide list</button>
+  <div class="app-shell">
+    <div class="panel" aria-label="Guide controls">
+      <div class="sheet-handle" id="sheetHandle" aria-label="Drag up or down to show or hide the list">
+        <div class="sheet-handle-bar"></div>
+      </div>
+
+      <div class="brand">
+        <p>Local Field Guide · Oaxaca</p>
+        <h1>Su <em>Oaxaca</em></h1>
+        <div class="home-card">
+          <strong>🏠 Hotel De Las Lunas</strong>
+          <span>98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera, Oaxaca</span>
+        </div>
+      </div>
+
+      <div class="search-wrapper">
+        <input id="searchInput" class="search-input" type="search" placeholder="Search places…" aria-label="Search places" />
+      </div>
+
+      <div class="filter-row" aria-label="Filter by category">
+        <button type="button" class="filter-chip" data-filter="all">All</button>
+        <button type="button" class="filter-chip" data-filter="food">🍽 Eat</button>
+        <button type="button" class="filter-chip" data-filter="activity">🌿 Do</button>
+        <button type="button" class="filter-chip" data-filter="fitness">💪 Gym</button>
+        <button type="button" class="filter-chip" data-filter="laundry">👕 Laundry</button>
+        <button type="button" class="filter-chip" data-filter="medical">🏥 Medical</button>
+        <button type="button" class="filter-chip" data-filter="market">🛒 Market</button>
+        <button type="button" class="filter-chip" data-filter="atm">💳 ATM</button>
+        <button type="button" class="filter-chip" data-filter="transit">🚌 Transit</button>
+      </div>
+
+      <div class="results-title">
+        <h2><span class="filter-count" id="resultCount">0</span> places near you</h2>
+      </div>
+
+      <div class="map-actions">
+        <button id="locateButton" type="button">📍 Locate</button>
+        <button id="themeToggle" type="button">☀️ Light</button>
+        <button id="clearFilters" type="button">Clear filters</button>
+      </div>
+
+      <div class="places-list" id="placesList"></div>
+      <div class="no-results" id="noResults" style="display:none;">No matching places found. Try broadening the search or changing the category.</div>
+    </div>
+
+    <div class="map-panel">
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

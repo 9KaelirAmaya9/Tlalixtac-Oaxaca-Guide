@@ -1,0 +1,9 @@
+{
+  "name": "su-oaxaca-guide",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "check": "node --check app.js"
+  }
+}
