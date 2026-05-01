@@ -1092,7 +1092,11 @@ L.marker([HOME.lat,HOME.lng],{icon:homeIcon(),zIndexOffset:9999})
 const PIN_SVG = '📍';
 const EXT_SVG = '↗';
 
-function gbpUrl(p){ return `https://www.google.com/maps/place/?q=place_id:${p.gid}`; }
+function gbpUrl(p){
+    // Use name+coords for reliable resolution on all devices
+    const name = encodeURIComponent(p.name);
+    return `https://www.google.com/maps/search/?api=1&query=${name}&query_place_id=${p.gid}`;
+  }
 
 function puHtml(p){
   const stars=p.r?`<div class="pu-row">⭐ ${p.r} <span style="opacity:.45">(${p.rc})</span></div>`:'';
@@ -1520,7 +1524,9 @@ document.head.appendChild(s);
     const hrs   = p.h ? `<div class="mobile-card-row">🕐 ${p.h}</div>` : '';
     const addr  = `<div class="mobile-card-row">📍 ${p.addr}</div>`;
     const tip   = p.tip ? `<div class="mobile-card-tip">${p.tip}</div>` : '';
-    const mapsUrl = p.gid ? `https://www.google.com/maps/place/?q=place_id:${p.gid}` : `https://maps.google.com/?q=${p.lat},${p.lng}`;
+    const mapsUrl = p.gid
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}&query_place_id=${p.gid}`
+      : `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
     const dirUrl  = `https://www.google.com/maps/dir/${HOME.lat},${HOME.lng}/${p.lat},${p.lng}`;
 
     body.innerHTML = `
