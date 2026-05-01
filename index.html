@@ -1148,12 +1148,15 @@ const MKS={};
   });
   DATA.forEach(p=>{
     const m=L.marker([p.lat,p.lng],{icon:mkIcon(p.cat,false)});
-    m.bindPopup(puHtml(p),{
-      maxWidth: window.innerWidth <= 820 ? 280 : 300,
-      offset: [0, window.innerWidth <= 820 ? -18 : -5],
-      autoPanPaddingTopLeft: [10, 10],
-      autoPanPaddingBottomRight: [10, 80]
-    });
+    // Only bind Leaflet popup on desktop — mobile uses the bottom card
+    if(window.innerWidth > 820){
+      m.bindPopup(puHtml(p),{
+        maxWidth: 300,
+        offset: [0, -5],
+        autoPanPaddingTopLeft: [10, 10],
+        autoPanPaddingBottomRight: [10, 40]
+      });
+    }
     m.on('click',()=>{
       activate(p.id,false);
       scrollCard(p.id);
@@ -1353,6 +1356,10 @@ function render(list){
           map.flyTo([p.lat,p.lng],15,{duration:.6,easeLinearity:.5});
         } else {
           map.flyTo([p.lat,p.lng],16,{duration:.85,easeLinearity:.4});
+          // Re-bind popup on desktop in case it wasn't bound at init
+          if(!MKS[p.id].getPopup()){
+            MKS[p.id].bindPopup(puHtml(p),{maxWidth:300,offset:[0,-5]});
+          }
           setTimeout(()=>MKS[p.id]?.openPopup(), 500);
         }
       });
@@ -1543,8 +1550,17 @@ document.head.appendChild(s);
   window.closeMobileCard = closeMobileCard;
 
   // Close mobile card when tapping map background
+  // Also close any stray popups on mobile
   map.on('click', function(){
-    if(window.innerWidth <= 820) closeMobileCard();
+    if(window.innerWidth <= 820){
+      closeMobileCard();
+      map.closePopup();
+    }
+  });
+
+  // Prevent any popup from opening on mobile
+  map.on('popupopen', function(){
+    if(window.innerWidth <= 820) map.closePopup();
   });
 
   // Remove the popupclose snap since we're not using popups on mobile
