@@ -781,10 +781,71 @@ body.dark .pu-dir:hover { background: rgba(212,96,64,.06); }
   to   { opacity:1; transform:translateY(0); }
 }
 
+
+/* ── MOBILE DETAIL CARD ── */
+.mobile-card {
+  display: none;
+  position: fixed;
+  left: 12px; right: 12px;
+  bottom: 80px;
+  z-index: 500;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(60,20,0,.18), 0 2px 8px rgba(60,20,0,.08);
+  overflow: hidden;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform .25s cubic-bezier(.16,1,.3,1), opacity .2s ease;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+.mobile-card.visible { display: block; }
+.mobile-card.shown   { transform: translateY(0); opacity: 1; }
+.mobile-card-bar     { height: 3px; width: 100%; flex-shrink: 0; }
+.mobile-card-body    { padding: 14px 16px 16px; }
+.mobile-card-close {
+  position: absolute; top: 10px; right: 12px;
+  background: none; border: none; cursor: pointer;
+  color: var(--ink3); font-size: 18px; line-height: 1;
+  padding: 2px 6px; border-radius: 4px; z-index: 2;
+}
+.mobile-card-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem; color: var(--ink);
+  line-height: 1.2; padding-right: 24px; margin-bottom: 3px;
+}
+.mobile-card-cat {
+  font-size: .52rem; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; margin-bottom: 8px;
+}
+.mobile-card-row { font-size: .68rem; color: var(--ink3); line-height: 1.5; margin-bottom: 2px; }
+.mobile-card-tip {
+  font-family: 'Libre Baskerville', serif;
+  font-size: .63rem; font-style: italic; color: var(--ink3); opacity: .7;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); line-height: 1.55;
+}
+.mobile-card-actions { display: flex; gap: 8px; margin-top: 12px; }
+.mobile-card-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  font-family: 'Jost', sans-serif; font-size: .60rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+  padding: 9px 10px; border-radius: 5px; border: 1px solid var(--border2);
+  color: var(--ink2); background: var(--bg2); transition: all .15s;
+}
+.mobile-card-btn.primary { background: var(--terra); color: #fff; border-color: var(--terra); }
+@media(min-width:821px){ .mobile-card { display: none !important; } }
 </style>
 </head>
 <body>
 <div id="map"></div>
+
+<!-- Mobile detail card (replaces popup on mobile) -->
+<div class="mobile-card" id="mobileCard">
+  <div class="mobile-card-bar" id="mobileCardBar"></div>
+  <button class="mobile-card-close" onclick="closeMobileCard()">✕</button>
+  <div class="mobile-card-body" id="mobileCardBody"></div>
+</div>
 
 <div class="map-controls" id="mapControls">
   <button class="map-btn" id="locBtn"   title="My location"    onclick="locateMe()">📍</button>
@@ -1096,10 +1157,8 @@ const MKS={};
     m.on('click',()=>{
       activate(p.id,false);
       scrollCard(p.id);
-      // On mobile: collapse panel so popup is visible above it
       if(window.innerWidth <= 820){
-        snapTo(22); // collapse to just header
-        setTimeout(()=>{ map.invalidateSize(); }, 320);
+        showMobileCard(p);
       }
     });
     MKS[p.id]=m;
@@ -1289,13 +1348,9 @@ function render(list){
       d.addEventListener('click',()=>{
         activate(p.id,true);
         if(window.innerWidth <= 820){
-          // Mobile: collapse panel → invalidate map size → fly → popup
+          showMobileCard(p);
           snapTo(22);
-          setTimeout(()=>{
-            map.invalidateSize();
-            map.flyTo([p.lat,p.lng],16,{duration:.7,easeLinearity:.4});
-            setTimeout(()=>MKS[p.id]?.openPopup(), 900);
-          }, 320);
+          map.flyTo([p.lat,p.lng],15,{duration:.6,easeLinearity:.5});
         } else {
           map.flyTo([p.lat,p.lng],16,{duration:.85,easeLinearity:.4});
           setTimeout(()=>MKS[p.id]?.openPopup(), 500);
@@ -1445,6 +1500,56 @@ const s=document.createElement('style');
 s.textContent='@keyframes hp{0%{transform:scale(.6);opacity:.8}100%{transform:scale(2.4);opacity:0}}';
 document.head.appendChild(s);
   // ── Expose functions to global scope for inline onclick handlers ──
+  // ── MOBILE CARD ─────────────────────────────────────────
+  function showMobileCard(p){
+    const bar   = document.getElementById('mobileCardBar');
+    const body  = document.getElementById('mobileCardBody');
+    const card  = document.getElementById('mobileCard');
+    const color = CAT[p.cat].color;
+
+    bar.style.background = color;
+
+    const stars = p.r ? `<div class="mobile-card-row">⭐ ${p.r} <span style="opacity:.5">(${p.rc} reviews)</span></div>` : '';
+    const hrs   = p.h ? `<div class="mobile-card-row">🕐 ${p.h}</div>` : '';
+    const addr  = `<div class="mobile-card-row">📍 ${p.addr}</div>`;
+    const tip   = p.tip ? `<div class="mobile-card-tip">${p.tip}</div>` : '';
+    const mapsUrl = p.gid ? `https://www.google.com/maps/place/?q=place_id:${p.gid}` : `https://maps.google.com/?q=${p.lat},${p.lng}`;
+    const dirUrl  = `https://www.google.com/maps/dir/${HOME.lat},${HOME.lng}/${p.lat},${p.lng}`;
+
+    body.innerHTML = `
+      <div class="mobile-card-name">${p.name}</div>
+      <div class="mobile-card-cat" style="color:${color}">${CAT[p.cat].emoji} ${CAT[p.cat].label}</div>
+      ${stars}${addr}${hrs}${tip}
+      <div class="mobile-card-actions">
+        <a class="mobile-card-btn primary" href="${mapsUrl}" target="_blank" rel="noopener">
+          📍 Google Maps
+        </a>
+        <a class="mobile-card-btn" href="${dirUrl}" target="_blank" rel="noopener">
+          ↗ Directions
+        </a>
+      </div>`;
+
+    card.classList.add('visible');
+    requestAnimationFrame(()=>{ card.classList.add('shown'); });
+  }
+
+  function closeMobileCard(){
+    const card = document.getElementById('mobileCard');
+    card.classList.remove('shown');
+    setTimeout(()=>{ card.classList.remove('visible'); }, 250);
+    activate(null, true);
+    if(window.innerWidth <= 820) snapTo(52);
+  }
+  window.closeMobileCard = closeMobileCard;
+
+  // Close mobile card when tapping map background
+  map.on('click', function(){
+    if(window.innerWidth <= 820) closeMobileCard();
+  });
+
+  // Remove the popupclose snap since we're not using popups on mobile
+  // map.on('popupclose'...) removed
+
   window.filt          = filt;
   window.doSearch      = doSearch;
   window.locateMe      = locateMe;
