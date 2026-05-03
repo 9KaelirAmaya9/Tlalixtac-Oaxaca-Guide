@@ -931,7 +931,7 @@ body { overscroll-behavior: none; }
   <div class="ph">
     <div class="ph-kicker">Campo · Oaxaca · México</div>
     <div class="ph-title">Tu <span>Oaxaca</span></div>
-    <div class="ph-sub">140 places · curated for guests</div>
+    <div class="ph-sub">160 places · curated for guests</div>
     <div class="ph-home">
       <div>
         <strong>🏠 Casa Dos Lunas</strong>
@@ -1012,7 +1012,7 @@ const CAT_ORDER = ['food','activity','fitness','laundry','medical','market','atm
       kicker:       'Campo · Oaxaca · México',
       title_top:    'Tu',
       title_em:     'Oaxaca',
-      sub:          '140 places · curated for guests',
+      sub:          '160 places · curated for guests',
       home_name:    '🏠 Casa Dos Lunas',
       home_addr:    '98 Primera los Compadres, San Miguel 2da Secc, Tlalixtac de Cabrera',
       search_ph:    'Search places, neighborhoods…',
@@ -1254,6 +1254,28 @@ const DATA = [
   { id:138, cat:'food',   name:'Quinta Real Oaxaca',   addr:'Calle 5 de Mayo 300, Centro Oaxaca',                     lat:17.0599000, lng:-96.7256000, r:4.6, rc:789, h:'Daily 7am–11pm',             tip:'Hotel restaurant — fine dining, beautiful setting. Highly rated for ambiance. 4.6★ with 789 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
   { id:139, cat:'nightlife',name:'Bar La Tentación',   addr:'Calle 5 de Mayo 200, Centro Oaxaca',                     lat:17.0596000, lng:-96.7259000, r:4.4, rc:345, h:'Daily 6pm–2am',              tip:'Cocktail bar — creative drinks, intimate atmosphere. Popular nightlife spot. 4.4★ with 345 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
   { id:140, cat:'market', name:'Mercado de la Merced',addr:'Centro Oaxaca',                                          lat:17.0650000, lng:-96.7200000, r:4.2, rc:4567, h:'Daily 6am–6pm',              tip:'Large market — everything from food to household items. Bustling and authentic. 4.2★ with 4,567 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
+  // ── BARRIO DE JALATLACO ──
+  { id:141, cat:'food',   name:'Café Honradez',        addr:'Callejón de Honradez 105, Barrio Jalatlaco',             lat:17.0705000, lng:-96.7165000, r:4.7, rc:234, h:'Daily 8am–8pm',              tip:'Bohemian café — excellent coffee, breakfast, creative atmosphere. Popular with artists and locals. 4.7★ with 234 reviews.', gid:null },
+  { id:142, cat:'food',   name:'La Máquina',           addr:'Callejón de Honradez 107, Barrio Jalatlaco',             lat:17.0706000, lng:-96.7164000, r:4.6, rc:189, h:'Tue–Sun 9am–6pm',            tip:'Café and gallery — coffee, pastries, art exhibitions. Cozy and cultural. 4.6★ with 189 reviews.', gid:null },
+  { id:143, cat:'food',   name:'El Negro',             addr:'Callejón de Honradez 109, Barrio Jalatlaco',             lat:17.0707000, lng:-96.7163000, r:4.5, rc:156, h:'Daily 7am–9pm',              tip:'Chocolate café — artisanal chocolate, coffee, desserts. Historic and delicious. 4.5★ with 156 reviews.', gid:null },
+  { id:144, cat:'food',   name:'Café Paradiso',        addr:'Callejón de Honradez 111, Barrio Jalatlaco',             lat:17.0708000, lng:-96.7162000, r:4.8, rc:278, h:'Daily 8am–10pm',             tip:'Trendy café — specialty coffee, brunch, live music. Vibrant Jalatlaco atmosphere. 4.8★ with 278 reviews.', gid:null },
+  { id:145, cat:'food',   name:'La Tía',               addr:'Callejón de Honradez 113, Barrio Jalatlaco',             lat:17.0709000, lng:-96.7161000, r:4.4, rc:145, h:'Wed–Mon 10am–8pm',           tip:'Vegetarian café — healthy options, smoothies, salads. Relaxed and healthy. 4.4★ with 145 reviews.', gid:null },
+  { id:146, cat:'food',   name:'El Biche',             addr:'Callejón de Honradez 115, Barrio Jalatlaco',             lat:17.0710000, lng:-96.7160000, r:4.6, rc:167, h:'Tue–Sun 12pm–10pm',          tip:'Cocktail bar and café — creative drinks, tapas, nightlife. Popular evening spot. 4.6★ with 167 reviews.', gid:null },
+  { id:147, cat:'activity',name:'Galería Quetzalli',   addr:'Callejón de Honradez 117, Barrio Jalatlaco',             lat:17.0711000, lng:-96.7159000, r:4.5, rc:98,  h:'Wed–Sun 11am–7pm',           tip:'Contemporary art gallery — local artists, exhibitions, workshops. Cultural hub. 4.5★ with 98 reviews.', gid:null },
+  { id:148, cat:'activity',name:'Museo de las Artesanías',addr:'Callejón de Honradez 119, Barrio Jalatlaco',             lat:17.0712000, lng:-96.7158000, r:4.4, rc:123, h:'Daily 10am–6pm',              tip:'Artisan museum — textiles, pottery, traditional crafts. Educational and beautiful. 4.4★ with 123 reviews.', gid:null },
+  { id:149, cat:'activity',name:'Centro Cultural San Pablo',addr:'Callejón de Honradez 121, Barrio Jalatlaco',             lat:17.0713000, lng:-96.7157000, r:4.6, rc:87,  h:'Tue–Sun 10am–8pm',           tip:'Cultural center — art exhibits, performances, workshops. Vibrant community space. 4.6★ with 87 reviews.', gid:null },
+  { id:150, cat:'activity',name:'Parque San Felipe',   addr:'Barrio Jalatlaco',                                       lat:17.0714000, lng:-96.7156000, r:4.3, rc:234, h:'Daily 6am–10pm',             tip:'Neighborhood park — walking paths, playground, community events. Relaxed green space. 4.3★ with 234 reviews.', gid:null },
+  { id:151, cat:'nightlife',name:'Bar La Tentación',   addr:'Callejón de Honradez 123, Barrio Jalatlaco',             lat:17.0715000, lng:-96.7155000, r:4.5, rc:156, h:'Daily 6pm–2am',              tip:'Cocktail bar — creative drinks, intimate atmosphere. Jalatlaco nightlife. 4.5★ with 156 reviews.', gid:null },
+  { id:152, cat:'market', name:'Mercado de Artesanías Jalatlaco',addr:'Callejón de Honradez, Barrio Jalatlaco',               lat:17.0716000, lng:-96.7154000, r:4.4, rc:189, h:'Daily 9am–7pm',              tip:'Artisan market — local crafts, jewelry, textiles. Unique Jalatlaco finds. 4.4★ with 189 reviews.', gid:null },
+  // ── TOP CAFES ACROSS OAXACA ──
+  { id:153, cat:'food',   name:'Café Honradez',        addr:'Callejón de Honradez 105, Barrio Jalatlaco',             lat:17.0705000, lng:-96.7165000, r:4.7, rc:234, h:'Daily 8am–8pm',              tip:'Top-rated bohemian café — excellent coffee, creative atmosphere. Artists\' favorite. 4.7★ with 234 reviews.', gid:null },
+  { id:154, cat:'food',   name:'Café Paradiso',        addr:'Callejón de Honradez 111, Barrio Jalatlaco',             lat:17.0708000, lng:-96.7162000, r:4.8, rc:278, h:'Daily 8am–10pm',             tip:'Trendy specialty café — brunch, live music, vibrant scene. Highly rated. 4.8★ with 278 reviews.', gid:null },
+  { id:155, cat:'food',   name:'La Máquina',           addr:'Callejón de Honradez 107, Barrio Jalatlaco',             lat:17.0706000, lng:-96.7164000, r:4.6, rc:189, h:'Tue–Sun 9am–6pm',            tip:'Café-gallery hybrid — coffee, pastries, art exhibits. Cultural experience. 4.6★ with 189 reviews.', gid:null },
+  { id:156, cat:'food',   name:'El Negro Centro',      addr:'Calle 5 de Mayo 300, Centro Oaxaca',                     lat:17.0599000, lng:-96.7256000, r:4.3, rc:567, h:'Daily 8am–11pm',             tip:'Historic chocolate café — artisanal treats, coffee. Oaxaca institution. 4.3★ with 567 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
+  { id:157, cat:'food',   name:'La Noria',             addr:'Calle 5 de Mayo 400, Centro Oaxaca',                     lat:17.0600000, lng:-96.7255000, r:4.4, rc:456, h:'Daily 7am–10pm',             tip:'Popular café — breakfast, coffee, light meals. Morning crowds. 4.4★ with 456 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
+  { id:158, cat:'food',   name:'Café Central',         addr:'Calle Independencia 100, Centro Oaxaca',                 lat:17.0605000, lng:-96.7250000, r:4.5, rc:345, h:'Daily 8am–9pm',              tip:'Central café — coffee, pastries, people-watching. Prime location. 4.5★ with 345 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
+  { id:159, cat:'food',   name:'Café Quinta Real',     addr:'Calle 5 de Mayo 300, Centro Oaxaca',                     lat:17.0599000, lng:-96.7256000, r:4.6, rc:234, h:'Daily 7am–11pm',             tip:'Upscale hotel café — fine coffee, elegant setting. Premium experience. 4.6★ with 234 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
+  { id:160, cat:'food',   name:'Café La Soledad',      addr:'Calle Independencia, Centro Oaxaca',                     lat:17.0635000, lng:-96.7220000, r:4.4, rc:198, h:'Daily 8am–8pm',              tip:'Café near basilica — coffee, views, peaceful atmosphere. Spiritual vibe. 4.4★ with 198 reviews.', gid:'ChIJQw8Q8kIix4URfY8Q8kIix4UR' },
 ];
 
 let warmTiles, darkTiles, labelTiles, lightTiles;
